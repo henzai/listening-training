@@ -1,13 +1,27 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useScrollDirection } from "../hooks/useScrollDirection";
 import styles from "./Layout.module.css";
 
 export function Layout() {
+  const mainRef = useRef<HTMLDivElement>(null);
+  const { pathname } = useLocation();
+  const { direction, reset } = useScrollDirection(mainRef, 10);
+
+  useEffect(() => {
+    if (pathname) {
+      reset();
+    }
+  }, [pathname, reset]);
+
+  const navHidden = direction === "down";
+
   return (
     <div className={styles.container}>
-      <main className={styles.main}>
+      <main ref={mainRef} className={`${styles.main} ${navHidden ? styles.mainNavHidden : ""}`}>
         <Outlet />
       </main>
-      <nav className={styles.nav}>
+      <nav className={`${styles.nav} ${navHidden ? styles.navHidden : ""}`}>
         <NavLink to="/" className={({ isActive }) => (isActive ? styles.active : "")} end>
           <span className={styles.icon}>🏠</span>
           <span className={styles.label}>Home</span>
