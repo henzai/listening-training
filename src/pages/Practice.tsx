@@ -1,14 +1,10 @@
-import { useParams, useNavigate } from "react-router-dom";
 import { useCallback, useEffect } from "react";
-import { usePracticeSession } from "../hooks/usePracticeSession";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
 import { useIntervalRepeat } from "../hooks/useIntervalRepeat";
-import {
-  SPEED_PRESETS,
-  REPEAT_OPTIONS,
-  PAUSE_OPTIONS,
-} from "../lib/types";
+import { usePracticeSession } from "../hooks/usePracticeSession";
 import type { PracticeMode } from "../lib/types";
+import { PAUSE_OPTIONS, REPEAT_OPTIONS, SPEED_PRESETS } from "../lib/types";
 import styles from "./Practice.module.css";
 
 const MODE_LABELS: Record<PracticeMode, string> = {
@@ -46,14 +42,15 @@ export function Practice() {
   });
 
   // Mark as practiced when user starts playing
+  // biome-ignore lint/correctness/useExhaustiveDependencies: markPracticed is stable
   useEffect(() => {
     if (player.isPlaying) {
       session.markPracticed();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player.isPlaying]);
 
   // Reset repeat counter when sentence changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: trigger on sentence change
   useEffect(() => {
     repeat.resetRepeatCounter();
   }, [player.currentIndex, repeat]);
@@ -70,7 +67,9 @@ export function Practice() {
     return (
       <div className={styles.error}>
         <p>{session.error ?? "スクリプトが見つかりません"}</p>
-        <button onClick={() => navigate("/library")}>ライブラリに戻る</button>
+        <button type="button" onClick={() => navigate("/library")}>
+          ライブラリに戻る
+        </button>
       </div>
     );
   }
@@ -81,7 +80,7 @@ export function Practice() {
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <button className={styles.backButton} onClick={() => navigate(-1)}>
+        <button type="button" className={styles.backButton} onClick={() => navigate(-1)}>
           ←
         </button>
         <div className={styles.headerInfo}>
@@ -94,33 +93,28 @@ export function Practice() {
 
       {/* Mode Selector */}
       <div className={styles.modeSelector}>
-        {(["listen-read", "guided-shadow", "blind-shadow"] as const).map(
-          (m) => (
-            <button
-              key={m}
-              className={`${styles.modeButton} ${session.mode === m ? styles.modeActive : ""}`}
-              onClick={() => session.setMode(m)}
-            >
-              {MODE_LABELS[m]}
-            </button>
-          ),
-        )}
+        {(["listen-read", "guided-shadow", "blind-shadow"] as const).map((m) => (
+          <button
+            type="button"
+            key={m}
+            className={`${styles.modeButton} ${session.mode === m ? styles.modeActive : ""}`}
+            onClick={() => session.setMode(m)}
+          >
+            {MODE_LABELS[m]}
+          </button>
+        ))}
       </div>
 
       {/* Sentence Display */}
       <div className={styles.sentenceArea}>
         {currentSentence && (
           <>
-            {session.showEnglish && (
-              <p className={styles.textEn}>{currentSentence.text_en}</p>
-            )}
+            {session.showEnglish && <p className={styles.textEn}>{currentSentence.text_en}</p>}
             {session.showJapanese && currentSentence.text_ja && (
               <p className={styles.textJa}>{currentSentence.text_ja}</p>
             )}
             {!session.showEnglish && !session.showJapanese && (
-              <p className={styles.blindHint}>
-                Sentence {player.currentIndex + 1}
-              </p>
+              <p className={styles.blindHint}>Sentence {player.currentIndex + 1}</p>
             )}
           </>
         )}
@@ -129,12 +123,14 @@ export function Practice() {
       {/* Text Toggle */}
       <div className={styles.toggleRow}>
         <button
+          type="button"
           className={`${styles.toggleButton} ${session.showEnglish ? styles.toggleActive : ""}`}
           onClick={() => session.setShowEnglish(!session.showEnglish)}
         >
           EN
         </button>
         <button
+          type="button"
           className={`${styles.toggleButton} ${session.showJapanese ? styles.toggleActive : ""}`}
           onClick={() => session.setShowJapanese(!session.showJapanese)}
         >
@@ -144,9 +140,10 @@ export function Practice() {
 
       {/* Sentence Navigation (progress dots) */}
       <div className={styles.dots}>
-        {session.sentences.map((_, i) => (
+        {session.sentences.map((s, i) => (
           <button
-            key={i}
+            type="button"
+            key={s.id}
             className={`${styles.dot} ${i === player.currentIndex ? styles.dotActive : ""}`}
             onClick={() => {
               player.goTo(i);
@@ -159,16 +156,18 @@ export function Practice() {
       {/* Playback Controls */}
       <div className={styles.controls}>
         <button
+          type="button"
           className={styles.controlButton}
           onClick={player.prev}
           disabled={player.currentIndex === 0}
         >
           ⏮
         </button>
-        <button className={styles.playButton} onClick={player.togglePlay}>
+        <button type="button" className={styles.playButton} onClick={player.togglePlay}>
           {player.isPlaying ? "⏸" : "▶"}
         </button>
         <button
+          type="button"
           className={styles.controlButton}
           onClick={player.next}
           disabled={player.currentIndex === session.sentences.length - 1}
@@ -179,10 +178,11 @@ export function Practice() {
 
       {/* Speed Control */}
       <div className={styles.speedSection}>
-        <label className={styles.sectionLabel}>Speed</label>
+        <span className={styles.sectionLabel}>Speed</span>
         <div className={styles.speedPresets}>
           {SPEED_PRESETS.map((s) => (
             <button
+              type="button"
               key={s}
               className={`${styles.presetButton} ${player.speed === s ? styles.presetActive : ""}`}
               onClick={() => player.setSpeed(s)}
@@ -206,8 +206,9 @@ export function Practice() {
       {/* Repeat Controls */}
       <div className={styles.repeatSection}>
         <div className={styles.repeatHeader}>
-          <label className={styles.sectionLabel}>Auto Repeat</label>
+          <span className={styles.sectionLabel}>Auto Repeat</span>
           <button
+            type="button"
             className={`${styles.toggleButton} ${repeat.autoRepeat ? styles.toggleActive : ""}`}
             onClick={() => repeat.setAutoRepeat(!repeat.autoRepeat)}
           >
@@ -221,6 +222,7 @@ export function Practice() {
               <div className={styles.repeatButtons}>
                 {REPEAT_OPTIONS.map((r) => (
                   <button
+                    type="button"
                     key={r}
                     className={`${styles.presetButton} ${repeat.repeatCount === r ? styles.presetActive : ""}`}
                     onClick={() => repeat.setRepeatCount(r)}
@@ -235,6 +237,7 @@ export function Practice() {
               <div className={styles.repeatButtons}>
                 {PAUSE_OPTIONS.map((p) => (
                   <button
+                    type="button"
                     key={p}
                     className={`${styles.presetButton} ${repeat.pauseDuration === p ? styles.presetActive : ""}`}
                     onClick={() => repeat.setPauseDuration(p)}

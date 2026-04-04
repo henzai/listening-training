@@ -1,7 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
-import { Home } from "./pages/Home";
 import { Generate } from "./pages/Generate";
+import { Home } from "./pages/Home";
 import { Library } from "./pages/Library";
 import { Practice } from "./pages/Practice";
 

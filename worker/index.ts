@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import type { Env } from "./types";
+import { audioRoutes } from "./routes/audio";
 import { generateRoutes } from "./routes/generate";
 import { scriptRoutes } from "./routes/scripts";
-import { audioRoutes } from "./routes/audio";
+import type { Env } from "./types";
 
 const app = new Hono<{ Bindings: Env }>();
 

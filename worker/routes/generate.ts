@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import type { Env, GenerateRequest } from "../types";
 import { generateScript } from "../services/llm";
 import { generateAudioForSentences } from "../services/tts";
+import type { Env, GenerateRequest, LLMSentence } from "../types";
 
 export const generateRoutes = new Hono<{ Bindings: Env }>();
 
@@ -15,7 +15,7 @@ generateRoutes.post("/generate", async (c) => {
   const scriptId = crypto.randomUUID();
 
   // Generate script via LLM
-  let sentences;
+  let sentences: LLMSentence[];
   try {
     sentences = await generateScript(c.env.OPENAI_API_KEY, topic, difficulty);
   } catch {
@@ -42,18 +42,14 @@ generateRoutes.post("/generate", async (c) => {
   }
 
   // Generate audio in background (non-blocking)
-  c.executionCtx.waitUntil(
-    generateAudioForSentences(c.env, scriptId, sentences, sentenceIds),
-  );
+  c.executionCtx.waitUntil(generateAudioForSentences(c.env, scriptId, sentences, sentenceIds));
 
   return c.json({ scriptId }, 201);
 });
 
 generateRoutes.get("/generate/status/:scriptId", async (c) => {
   const scriptId = c.req.param("scriptId");
-  const script = await c.env.DB.prepare(
-    "SELECT status, sentence_count FROM scripts WHERE id = ?",
-  )
+  const script = await c.env.DB.prepare("SELECT status, sentence_count FROM scripts WHERE id = ?")
     .bind(scriptId)
     .first<{ status: string; sentence_count: number }>();
 

@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TOPICS, DIFFICULTIES } from "../lib/types";
-import type { Topic, Difficulty } from "../lib/types";
 import * as api from "../lib/api";
+import type { Difficulty, Topic } from "../lib/types";
+import { DIFFICULTIES, TOPICS } from "../lib/types";
 import styles from "./Generate.module.css";
 
 export function Generate() {
@@ -63,10 +63,11 @@ export function Generate() {
       <h1 className={styles.title}>スクリプト生成</h1>
 
       <div className={styles.field}>
-        <label className={styles.label}>トピック</label>
+        <span className={styles.label}>トピック</span>
         <div className={styles.options}>
           {TOPICS.map((t) => (
             <button
+              type="button"
               key={t.value}
               className={`${styles.option} ${topic === t.value ? styles.selected : ""}`}
               onClick={() => setTopic(t.value)}
@@ -79,10 +80,11 @@ export function Generate() {
       </div>
 
       <div className={styles.field}>
-        <label className={styles.label}>難易度</label>
+        <span className={styles.label}>難易度</span>
         <div className={styles.options}>
           {DIFFICULTIES.map((d) => (
             <button
+              type="button"
               key={d.value}
               className={`${styles.option} ${difficulty === d.value ? styles.selected : ""}`}
               onClick={() => setDifficulty(d.value)}
@@ -104,7 +106,7 @@ export function Generate() {
           </p>
         </div>
       ) : (
-        <button className={styles.generateButton} onClick={handleGenerate}>
+        <button type="button" className={styles.generateButton} onClick={handleGenerate}>
           生成する
         </button>
       )}

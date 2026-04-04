@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { Script } from "../lib/types";
 import * as api from "../lib/api";
+import type { Script } from "../lib/types";
 import styles from "./Library.module.css";
 
 export function Library() {
@@ -42,6 +42,7 @@ export function Library() {
       <div className={styles.filters}>
         {(["all", "new", "practiced"] as const).map((f) => (
           <button
+            type="button"
             key={f}
             className={`${styles.filterButton} ${filter === f ? styles.active : ""}`}
             onClick={() => setFilter(f)}
@@ -62,27 +63,21 @@ export function Library() {
         <div className={styles.list}>
           {filtered.map((script) => (
             <div key={script.id} className={styles.card}>
-              <Link
-                to={`/practice/${script.id}`}
-                className={styles.cardContent}
-              >
+              <Link to={`/practice/${script.id}`} className={styles.cardContent}>
                 <div className={styles.cardHeader}>
                   <span className={styles.topic}>{script.topic}</span>
-                  <span className={styles.difficulty}>
-                    {script.difficulty}
-                  </span>
+                  <span className={styles.difficulty}>{script.difficulty}</span>
                 </div>
                 <div className={styles.cardMeta}>
                   <span>{script.sentence_count} sentences</span>
-                  <span>
-                    {new Date(script.created_at).toLocaleDateString("ja-JP")}
-                  </span>
+                  <span>{new Date(script.created_at).toLocaleDateString("ja-JP")}</span>
                 </div>
                 {script.status !== "ready" && (
                   <span className={styles.status}>{script.status}</span>
                 )}
               </Link>
               <button
+                type="button"
                 className={styles.deleteButton}
                 onClick={() => handleDelete(script.id)}
                 aria-label="削除"

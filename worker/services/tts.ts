@@ -2,10 +2,7 @@ import type { Env, LLMSentence } from "../types";
 
 const MAX_RETRIES = 2;
 
-async function generateSingleAudio(
-  apiKey: string,
-  text: string,
-): Promise<ArrayBuffer> {
+async function generateSingleAudio(apiKey: string, text: string): Promise<ArrayBuffer> {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     const response = await fetch("https://api.openai.com/v1/audio/speech", {
       method: "POST",
@@ -50,10 +47,7 @@ export async function generateAudioForSentences(
       const results = await Promise.all(
         batch.map(async (sentence, batchIndex) => {
           const index = i + batchIndex;
-          const audioBuffer = await generateSingleAudio(
-            env.OPENAI_API_KEY,
-            sentence.text_en,
-          );
+          const audioBuffer = await generateSingleAudio(env.OPENAI_API_KEY, sentence.text_en);
 
           const r2Key = `audio/${scriptId}/${index}.mp3`;
           await env.AUDIO_BUCKET.put(r2Key, audioBuffer, {
@@ -79,17 +73,11 @@ export async function generateAudioForSentences(
     }
 
     // Mark script as ready
-    await env.DB.prepare(
-      "UPDATE scripts SET status = 'ready', total_duration_ms = ? WHERE id = ?",
-    )
+    await env.DB.prepare("UPDATE scripts SET status = 'ready', total_duration_ms = ? WHERE id = ?")
       .bind(totalDurationMs, scriptId)
       .run();
   } catch {
     // Mark as error on failure
-    await env.DB.prepare(
-      "UPDATE scripts SET status = 'error' WHERE id = ?",
-    )
-      .bind(scriptId)
-      .run();
+    await env.DB.prepare("UPDATE scripts SET status = 'error' WHERE id = ?").bind(scriptId).run();
   }
 }

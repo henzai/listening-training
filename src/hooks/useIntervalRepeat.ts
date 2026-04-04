@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { loadSettings, saveSettings } from "../lib/settings";
 
 interface UseIntervalRepeatOptions {
@@ -38,14 +38,7 @@ export function useIntervalRepeat({
         }, pauseDuration * 1000);
       }
     });
-  }, [
-    autoRepeat,
-    repeatCount,
-    pauseDuration,
-    onEnded,
-    onPlayCurrent,
-    onRepeatComplete,
-  ]);
+  }, [autoRepeat, repeatCount, pauseDuration, onEnded, onPlayCurrent, onRepeatComplete]);
 
   const resetRepeatCounter = useCallback(() => {
     currentRepeatRef.current = 0;

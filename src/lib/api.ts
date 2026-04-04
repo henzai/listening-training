@@ -1,4 +1,4 @@
-import type { Script, Sentence, Topic, Difficulty } from "./types";
+import type { Difficulty, Script, Sentence, Topic } from "./types";
 
 const BASE = "/api/v1";
 
@@ -36,9 +36,7 @@ export function getScripts() {
 }
 
 export function getScript(scriptId: string) {
-  return request<{ script: Script; sentences: Sentence[] }>(
-    `/scripts/${scriptId}`,
-  );
+  return request<{ script: Script; sentences: Sentence[] }>(`/scripts/${scriptId}`);
 }
 
 export function deleteScript(scriptId: string) {

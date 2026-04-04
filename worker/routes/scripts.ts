@@ -48,9 +48,7 @@ scriptRoutes.delete("/scripts/:scriptId", async (c) => {
   await Promise.all(deletePromises);
 
   // Delete from DB (cascades to sentences)
-  await c.env.DB.prepare("DELETE FROM scripts WHERE id = ?")
-    .bind(scriptId)
-    .run();
+  await c.env.DB.prepare("DELETE FROM scripts WHERE id = ?").bind(scriptId).run();
 
   return c.json({ ok: true });
 });
@@ -58,9 +56,7 @@ scriptRoutes.delete("/scripts/:scriptId", async (c) => {
 scriptRoutes.patch("/scripts/:scriptId/progress", async (c) => {
   const scriptId = c.req.param("scriptId");
 
-  await c.env.DB.prepare(
-    "UPDATE scripts SET last_practiced_at = datetime('now') WHERE id = ?",
-  )
+  await c.env.DB.prepare("UPDATE scripts SET last_practiced_at = datetime('now') WHERE id = ?")
     .bind(scriptId)
     .run();
 

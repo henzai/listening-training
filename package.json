@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "wrangler dev",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "check": "biome check --write ."
   },
   "repository": {
     "type": "git",
@@ -16,7 +19,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-
   "bugs": {
     "url": "https://github.com/henzai/listening-training/issues"
   },
@@ -27,6 +29,7 @@
     "react-router-dom": "^7.14.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.4.10",
     "@cloudflare/workers-types": "^4.20260404.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

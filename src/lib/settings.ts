@@ -26,8 +26,5 @@ export function loadSettings(): Settings {
 
 export function saveSettings(settings: Partial<Settings>): void {
   const current = loadSettings();
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({ ...current, ...settings }),
-  );
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...current, ...settings }));
 }

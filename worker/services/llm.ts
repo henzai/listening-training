@@ -3,8 +3,7 @@ import type { LLMSentence } from "../types";
 const TOPIC_PROMPTS: Record<string, string> = {
   business:
     "a professional business scenario such as meetings, presentations, negotiations, or workplace communication",
-  daily:
-    "everyday situations like shopping, dining, traveling, or casual conversations",
+  daily: "everyday situations like shopping, dining, traveling, or casual conversations",
   news: "a recent news topic covering current events, politics, science, or world affairs",
   tech: "technology topics such as software development, AI, startups, or digital trends",
 };

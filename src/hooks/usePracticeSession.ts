@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import type { Script, Sentence, PracticeMode } from "../lib/types";
+import { useEffect, useState } from "react";
 import * as api from "../lib/api";
+import type { PracticeMode, Script, Sentence } from "../lib/types";
 
 export function usePracticeSession(scriptId: string) {
   const [script, setScript] = useState<Script | null>(null);
