@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
-import { useImmersiveControls } from "../hooks/useImmersiveControls";
 import { usePracticeSession } from "../hooks/usePracticeSession";
 import type { PracticeMode } from "../lib/types";
 import { SPEED_PRESETS } from "../lib/types";
@@ -22,9 +21,11 @@ export function Practice() {
     scriptId: scriptId!,
     sentenceCount: session.sentences.length,
   });
-  const { controlsVisible, showControls, toggleControls } = useImmersiveControls();
-
   const sentenceRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const listRef = useRef<HTMLDivElement>(null);
+  const [topVisible, setTopVisible] = useState(true);
+  const [bottomVisible, setBottomVisible] = useState(false);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   // Auto-play first sentence when loaded
   // biome-ignore lint/correctness/useExhaustiveDependencies: run once when sentences are ready
@@ -65,6 +66,25 @@ export function Practice() {
     });
   }, [player.currentIndex]);
 
+  // Top overlay: visible when scrolled to top
+  // Bottom overlay: visible while scrolling, hides after 1.5s idle
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-attach after loading completes and ref becomes available
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      setTopVisible(el.scrollTop <= 10);
+      setBottomVisible(true);
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+      scrollTimerRef.current = setTimeout(() => setBottomVisible(false), 1500);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
+  }, [session.loading]);
+
   if (session.loading) {
     return (
       <div className={styles.loading}>
@@ -84,20 +104,13 @@ export function Practice() {
     );
   }
 
-  const overlayClass = controlsVisible ? styles.overlayVisible : "";
+  const topOverlayClass = topVisible ? styles.overlayVisible : "";
+  const bottomOverlayClass = bottomVisible ? styles.overlayVisible : "";
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: tap-to-toggle controls overlay
-    <div
-      className={styles.container}
-      onClick={toggleControls}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") toggleControls();
-      }}
-      role="presentation"
-    >
+    <div className={styles.container}>
       {/* Full-screen sentence list */}
-      <div className={styles.sentenceList}>
+      <div ref={listRef} className={styles.sentenceList}>
         {session.sentences.map((s, i) => (
           <button
             type="button"
@@ -106,15 +119,13 @@ export function Practice() {
               sentenceRefs.current[i] = el;
             }}
             className={`${styles.sentenceItem} ${i === player.currentIndex ? styles.sentenceActive : ""}`}
-            onClick={(e) => {
-              e.stopPropagation();
+            onClick={() => {
               if (player.isPlaying && i === player.currentIndex) {
                 player.pause();
               } else {
                 player.goTo(i);
                 player.loadAndPlay(i);
               }
-              showControls();
             }}
           >
             <div className={styles.sentenceText}>
@@ -135,15 +146,12 @@ export function Practice() {
         ))}
       </div>
 
-      {/* Top overlay: header + mode + toggles */}
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: overlay tap handler */}
+      {/* Top overlay: header + mode + toggles — visible when scrolled to top */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: overlay stops propagation */}
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by container */}
       <div
-        className={`${styles.overlayTop} ${overlayClass}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          showControls();
-        }}
+        className={`${styles.overlayTop} ${topOverlayClass}`}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.header}>
           <button type="button" className={styles.backButton} onClick={() => navigate(-1)}>
@@ -188,16 +196,8 @@ export function Practice() {
         </div>
       </div>
 
-      {/* Bottom overlay: playback + speed */}
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: overlay tap handler */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by container */}
-      <div
-        className={`${styles.overlayBottom} ${overlayClass}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          showControls();
-        }}
-      >
+      {/* Bottom overlay: speed — visible while scrolling */}
+      <div className={`${styles.overlayBottom} ${bottomOverlayClass}`}>
         <div className={styles.speedSection}>
           <span className={styles.sectionLabel}>Speed</span>
           <div className={styles.speedPresets}>

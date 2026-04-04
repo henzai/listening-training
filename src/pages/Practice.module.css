@@ -11,7 +11,7 @@
   overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
-  padding: calc(8px + var(--safe-top)) 12px calc(8px + var(--safe-bottom));
+  padding: calc(140px + var(--safe-top)) 12px calc(8px + var(--safe-bottom));
 }
 
 .sentenceItem {
