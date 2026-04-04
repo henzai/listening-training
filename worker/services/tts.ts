@@ -4,7 +4,32 @@ const FEMALE_VOICES = ["coral", "nova", "sage", "shimmer", "fable"] as const;
 const MALE_VOICES = ["ash", "echo", "onyx", "ballad", "alloy"] as const;
 type Voice = (typeof FEMALE_VOICES)[number] | (typeof MALE_VOICES)[number];
 
-function buildVoiceMap(sentences: LLMSentence[]): Map<string, Voice> {
+interface TopicVoiceConfig {
+  female: readonly Voice[];
+  male: readonly Voice[];
+  default: Voice;
+}
+
+const TOPIC_VOICES: Record<string, TopicVoiceConfig> = {
+  business: { female: ["sage", "shimmer"], male: ["echo", "onyx"], default: "sage" },
+  daily: { female: ["coral", "nova"], male: ["ash", "ballad"], default: "coral" },
+  news: { female: ["nova", "fable"], male: ["echo", "ballad"], default: "nova" },
+  tech: { female: ["shimmer", "sage"], male: ["onyx", "ash"], default: "onyx" },
+  travel: { female: ["coral", "sage"], male: ["ash", "echo"], default: "coral" },
+  academic: { female: ["nova", "shimmer"], male: ["onyx", "ballad"], default: "onyx" },
+  entertainment: { female: ["shimmer", "coral"], male: ["ballad", "ash"], default: "shimmer" },
+  health: { female: ["sage", "nova"], male: ["echo", "alloy"], default: "sage" },
+  sports: { female: ["fable", "coral"], male: ["ash", "onyx"], default: "ash" },
+};
+
+const DEFAULT_VOICE_CONFIG: TopicVoiceConfig = {
+  female: FEMALE_VOICES,
+  male: MALE_VOICES,
+  default: "coral",
+};
+
+function buildVoiceMap(sentences: LLMSentence[], topic: string): Map<string, Voice> {
+  const config = TOPIC_VOICES[topic] ?? DEFAULT_VOICE_CONFIG;
   const seen = new Map<string, Voice>();
   let femaleIdx = 0;
   let maleIdx = 0;
@@ -12,10 +37,10 @@ function buildVoiceMap(sentences: LLMSentence[]): Map<string, Voice> {
   for (const s of sentences) {
     if (!s.speaker || seen.has(s.speaker)) continue;
     if (s.speaker_gender === "male") {
-      seen.set(s.speaker, MALE_VOICES[maleIdx % MALE_VOICES.length]);
+      seen.set(s.speaker, config.male[maleIdx % config.male.length]);
       maleIdx++;
     } else {
-      seen.set(s.speaker, FEMALE_VOICES[femaleIdx % FEMALE_VOICES.length]);
+      seen.set(s.speaker, config.female[femaleIdx % config.female.length]);
       femaleIdx++;
     }
   }
@@ -60,9 +85,11 @@ export async function generateAudioForSentences(
   scriptId: string,
   sentences: LLMSentence[],
   sentenceIds: string[],
+  topic: string,
 ): Promise<void> {
   try {
-    const voiceMap = buildVoiceMap(sentences);
+    const config = TOPIC_VOICES[topic] ?? DEFAULT_VOICE_CONFIG;
+    const voiceMap = buildVoiceMap(sentences, topic);
 
     // Generate audio in parallel (batches of 5 to avoid rate limits)
     const batchSize = 5;
@@ -75,7 +102,7 @@ export async function generateAudioForSentences(
       const results = await Promise.all(
         batch.map(async (sentence, batchIndex) => {
           const index = i + batchIndex;
-          const voice = sentence.speaker ? voiceMap.get(sentence.speaker) : undefined;
+          const voice = sentence.speaker ? voiceMap.get(sentence.speaker) : config.default;
           const audioBuffer = await generateSingleAudio(
             env.OPENAI_API_KEY,
             sentence.text_en,

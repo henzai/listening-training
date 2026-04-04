@@ -49,7 +49,9 @@ generateRoutes.post("/generate", async (c) => {
   }
 
   // Generate audio in background (non-blocking)
-  c.executionCtx.waitUntil(generateAudioForSentences(c.env, scriptId, sentences, sentenceIds));
+  c.executionCtx.waitUntil(
+    generateAudioForSentences(c.env, scriptId, sentences, sentenceIds, topic),
+  );
 
   return c.json({ scriptId }, 201);
 });

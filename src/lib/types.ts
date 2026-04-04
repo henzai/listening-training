@@ -21,7 +21,16 @@ export interface Sentence {
   audio_format: string;
 }
 
-export type Topic = "business" | "daily" | "news" | "tech";
+export type Topic =
+  | "business"
+  | "daily"
+  | "news"
+  | "tech"
+  | "travel"
+  | "academic"
+  | "entertainment"
+  | "health"
+  | "sports";
 export type Difficulty = "intermediate" | "upper-intermediate" | "advanced";
 
 export type PracticeMode = "listen-read" | "guided-shadow" | "blind-shadow";
@@ -31,6 +40,11 @@ export const TOPICS: { value: Topic; label: string }[] = [
   { value: "daily", label: "Daily Life" },
   { value: "news", label: "News" },
   { value: "tech", label: "Tech" },
+  { value: "travel", label: "Travel" },
+  { value: "academic", label: "Academic" },
+  { value: "entertainment", label: "Entertainment" },
+  { value: "health", label: "Health" },
+  { value: "sports", label: "Sports" },
 ];
 
 export const DIFFICULTIES: { value: Difficulty; label: string }[] = [
