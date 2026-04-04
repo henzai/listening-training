@@ -1,6 +1,11 @@
 name = "listening-training"
 main = "worker/index.ts"
 compatibility_date = "2025-04-01"
+workers_dev = false
+
+[[routes]]
+pattern = "listening.ranwei.dev/*"
+zone_name = "ranwei.dev"
 
 [assets]
 directory = "dist"

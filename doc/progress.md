@@ -64,21 +64,16 @@
 
 ---
 
-## 未実施
+## 完了したデプロイ・セキュリティ設定
 
-### 1. Cloudflare Access の設定
+### 1. 本番デプロイ（2026-04-05 完了）
+- `listening.ranwei.dev` にデプロイ済み
+- `workers_dev = false` で workers.dev URL を無効化
+- DNS: `listening` AAAA レコード（`100::`、Proxied）設定済み
 
-Cloudflare Dashboard で：
-1. Zero Trust → Access → Applications でアプリケーションを作成
-2. Self-hosted、ドメインを指定
-3. Policy: 自分のメールアドレスのみ許可
-4. Workers 側の JWT 検証は現在未実装（要追加 or Access がフロントで遮断するため最低限は機能する）
-
-### 2. 本番デプロイ
-
-```bash
-npm run deploy
-```
+### 2. Cloudflare Access（2026-04-05 完了）
+- Zero Trust → Access で `listening.ranwei.dev` にアクセス制限設定済み
+- 許可ユーザーのメールアドレスのみアクセス可
 
 ---
 
@@ -86,7 +81,7 @@ npm run deploy
 
 | 項目 | ステータス | 備考 |
 |---|---|---|
-| Settings 画面 | 未実装 | スペックにルートの記載あり。現在は Practice 画面内で速度・リピート設定を操作。独立した設定画面が必要なら追加 |
-| Cloudflare Access JWT 検証 | 未実装 | Worker 側での `CF-Access-JWT-Assertion` 検証ミドルウェア。Access がフロント遮断するため最低限は機能するが、API 直接アクセス防止には必要 |
+| Settings 画面 | 実装済み | ba9e619 で追加済み |
+| Cloudflare Access JWT 検証 | 対応不要 | 個人利用のため不要。`workers_dev = false` で workers.dev 経由のバイパスを防止済み |
 | audio-player コンポーネント分割 | 未実施 | スペックでは `components/audio-player/` を想定。現在は Practice.tsx に統合。必要に応じて分離 |
 | generate / library コンポーネント分割 | 未実施 | 同上。ページ単位に収まっているため現時点では分割不要 |
