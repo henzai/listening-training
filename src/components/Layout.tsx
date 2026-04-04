@@ -20,6 +20,10 @@ export function Layout() {
           <span className={styles.icon}>📚</span>
           <span className={styles.label}>Library</span>
         </NavLink>
+        <NavLink to="/settings" className={({ isActive }) => (isActive ? styles.active : "")}>
+          <span className={styles.icon}>⚙️</span>
+          <span className={styles.label}>Settings</span>
+        </NavLink>
       </nav>
     </div>
   );

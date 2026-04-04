@@ -8,11 +8,8 @@ directory = "dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "listening-training-db"
-database_id = "placeholder-id"
+database_id = "37b2eb9c-2629-46a7-b2bf-37defb1570dd"
 
 [[r2_buckets]]
 binding = "AUDIO_BUCKET"
 bucket_name = "listening-training-audio"
-
-[vars]
-OPENAI_API_KEY = ""
