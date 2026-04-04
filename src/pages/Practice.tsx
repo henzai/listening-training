@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
+import { useImmersiveControls } from "../hooks/useImmersiveControls";
 import { usePracticeSession } from "../hooks/usePracticeSession";
 import type { PracticeMode } from "../lib/types";
 import { SPEED_PRESETS } from "../lib/types";
@@ -21,8 +22,17 @@ export function Practice() {
     scriptId: scriptId!,
     sentenceCount: session.sentences.length,
   });
+  const { controlsVisible, showControls, toggleControls } = useImmersiveControls();
 
   const sentenceRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Auto-play first sentence when loaded
+  // biome-ignore lint/correctness/useExhaustiveDependencies: run once when sentences are ready
+  useEffect(() => {
+    if (session.sentences.length > 0) {
+      player.loadAndPlay(0);
+    }
+  }, [session.sentences.length]);
 
   // Auto-advance to next sentence when current one ends
   const handleNext = useCallback(() => {
@@ -74,54 +84,19 @@ export function Practice() {
     );
   }
 
+  const overlayClass = controlsVisible ? styles.overlayVisible : "";
+
   return (
-    <div className={styles.container}>
-      {/* Header */}
-      <div className={styles.header}>
-        <button type="button" className={styles.backButton} onClick={() => navigate(-1)}>
-          ←
-        </button>
-        <div className={styles.headerInfo}>
-          <span className={styles.topic}>{session.script.topic}</span>
-          <span className={styles.counter}>
-            {player.currentIndex + 1} / {session.sentences.length}
-          </span>
-        </div>
-      </div>
-
-      {/* Mode Selector */}
-      <div className={styles.modeSelector}>
-        {(["listen-read", "guided-shadow", "blind-shadow"] as const).map((m) => (
-          <button
-            type="button"
-            key={m}
-            className={`${styles.modeButton} ${session.mode === m ? styles.modeActive : ""}`}
-            onClick={() => session.setMode(m)}
-          >
-            {MODE_LABELS[m]}
-          </button>
-        ))}
-      </div>
-
-      {/* Text Toggle */}
-      <div className={styles.toggleRow}>
-        <button
-          type="button"
-          className={`${styles.toggleButton} ${session.showEnglish ? styles.toggleActive : ""}`}
-          onClick={() => session.setShowEnglish(!session.showEnglish)}
-        >
-          EN
-        </button>
-        <button
-          type="button"
-          className={`${styles.toggleButton} ${session.showJapanese ? styles.toggleActive : ""}`}
-          onClick={() => session.setShowJapanese(!session.showJapanese)}
-        >
-          JA
-        </button>
-      </div>
-
-      {/* Sentence List */}
+    // biome-ignore lint/a11y/noStaticElementInteractions: tap-to-toggle controls overlay
+    <div
+      className={styles.container}
+      onClick={toggleControls}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") toggleControls();
+      }}
+      role="presentation"
+    >
+      {/* Full-screen sentence list */}
       <div className={styles.sentenceList}>
         {session.sentences.map((s, i) => (
           <button
@@ -131,16 +106,26 @@ export function Practice() {
               sentenceRefs.current[i] = el;
             }}
             className={`${styles.sentenceItem} ${i === player.currentIndex ? styles.sentenceActive : ""}`}
-            onClick={() => {
-              player.goTo(i);
-              player.loadAndPlay(i);
+            onClick={(e) => {
+              e.stopPropagation();
+              if (player.isPlaying && i === player.currentIndex) {
+                player.pause();
+              } else {
+                player.goTo(i);
+                player.loadAndPlay(i);
+              }
+              showControls();
             }}
           >
             <div className={styles.sentenceText}>
-              {s.speaker && (i === 0 || session.sentences[i - 1].speaker !== s.speaker) && (
-                <span className={styles.speakerLabel}>{s.speaker}</span>
+              {session.showEnglish && (
+                <p className={styles.textEn}>
+                  {s.speaker && (i === 0 || session.sentences[i - 1].speaker !== s.speaker) && (
+                    <span className={styles.speakerLabel}>{s.speaker}</span>
+                  )}
+                  {s.text_en}
+                </p>
               )}
-              {session.showEnglish && <p className={styles.textEn}>{s.text_en}</p>}
               {session.showJapanese && s.text_ja && <p className={styles.textJa}>{s.text_ja}</p>}
               {!session.showEnglish && !session.showJapanese && (
                 <p className={styles.blindHint}>───</p>
@@ -150,30 +135,69 @@ export function Practice() {
         ))}
       </div>
 
-      {/* Bottom Bar (sticky) */}
-      <div className={styles.bottomBar}>
-        <div className={styles.controls}>
-          <button
-            type="button"
-            className={styles.controlButton}
-            onClick={player.prev}
-            disabled={player.currentIndex === 0}
-          >
-            ⏮
+      {/* Top overlay: header + mode + toggles */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: overlay tap handler */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by container */}
+      <div
+        className={`${styles.overlayTop} ${overlayClass}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          showControls();
+        }}
+      >
+        <div className={styles.header}>
+          <button type="button" className={styles.backButton} onClick={() => navigate(-1)}>
+            ←
           </button>
-          <button type="button" className={styles.playButton} onClick={player.togglePlay}>
-            {player.isPlaying ? "⏸" : "▶"}
-          </button>
-          <button
-            type="button"
-            className={styles.controlButton}
-            onClick={player.next}
-            disabled={player.currentIndex === session.sentences.length - 1}
-          >
-            ⏭
-          </button>
+          <div className={styles.headerInfo}>
+            <span className={styles.topic}>{session.script.topic}</span>
+            <span className={styles.counter}>
+              {player.currentIndex + 1} / {session.sentences.length}
+            </span>
+          </div>
         </div>
 
+        <div className={styles.modeSelector}>
+          {(["listen-read", "guided-shadow", "blind-shadow"] as const).map((m) => (
+            <button
+              type="button"
+              key={m}
+              className={`${styles.modeButton} ${session.mode === m ? styles.modeActive : ""}`}
+              onClick={() => session.setMode(m)}
+            >
+              {MODE_LABELS[m]}
+            </button>
+          ))}
+        </div>
+
+        <div className={styles.toggleRow}>
+          <button
+            type="button"
+            className={`${styles.toggleButton} ${session.showEnglish ? styles.toggleActive : ""}`}
+            onClick={() => session.setShowEnglish(!session.showEnglish)}
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            className={`${styles.toggleButton} ${session.showJapanese ? styles.toggleActive : ""}`}
+            onClick={() => session.setShowJapanese(!session.showJapanese)}
+          >
+            JA
+          </button>
+        </div>
+      </div>
+
+      {/* Bottom overlay: playback + speed */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: overlay tap handler */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by container */}
+      <div
+        className={`${styles.overlayBottom} ${overlayClass}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          showControls();
+        }}
+      >
         <div className={styles.speedSection}>
           <span className={styles.sectionLabel}>Speed</span>
           <div className={styles.speedPresets}>

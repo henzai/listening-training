@@ -20,6 +20,11 @@
   padding-bottom: 16px;
 }
 
+.mainFullscreen {
+  padding: 0;
+  overflow: hidden;
+}
+
 .nav {
   position: fixed;
   bottom: 0;
