@@ -136,7 +136,6 @@ export function Practice() {
               player.loadAndPlay(i);
             }}
           >
-            <span className={styles.sentenceIndex}>{i + 1}</span>
             <div className={styles.sentenceText}>
               {s.speaker && (i === 0 || session.sentences[i - 1].speaker !== s.speaker) && (
                 <span className={styles.speakerLabel}>{s.speaker}</span>
@@ -144,61 +143,62 @@ export function Practice() {
               {session.showEnglish && <p className={styles.textEn}>{s.text_en}</p>}
               {session.showJapanese && s.text_ja && <p className={styles.textJa}>{s.text_ja}</p>}
               {!session.showEnglish && !session.showJapanese && (
-                <p className={styles.blindHint}>Sentence {i + 1}</p>
+                <p className={styles.blindHint}>───</p>
               )}
             </div>
           </button>
         ))}
       </div>
 
-      {/* Playback Controls */}
-      <div className={styles.controls}>
-        <button
-          type="button"
-          className={styles.controlButton}
-          onClick={player.prev}
-          disabled={player.currentIndex === 0}
-        >
-          ⏮
-        </button>
-        <button type="button" className={styles.playButton} onClick={player.togglePlay}>
-          {player.isPlaying ? "⏸" : "▶"}
-        </button>
-        <button
-          type="button"
-          className={styles.controlButton}
-          onClick={player.next}
-          disabled={player.currentIndex === session.sentences.length - 1}
-        >
-          ⏭
-        </button>
-      </div>
-
-      {/* Speed Control */}
-      <div className={styles.speedSection}>
-        <span className={styles.sectionLabel}>Speed</span>
-        <div className={styles.speedPresets}>
-          {SPEED_PRESETS.map((s) => (
-            <button
-              type="button"
-              key={s}
-              className={`${styles.presetButton} ${player.speed === s ? styles.presetActive : ""}`}
-              onClick={() => player.setSpeed(s)}
-            >
-              {s}x
-            </button>
-          ))}
+      {/* Bottom Bar (sticky) */}
+      <div className={styles.bottomBar}>
+        <div className={styles.controls}>
+          <button
+            type="button"
+            className={styles.controlButton}
+            onClick={player.prev}
+            disabled={player.currentIndex === 0}
+          >
+            ⏮
+          </button>
+          <button type="button" className={styles.playButton} onClick={player.togglePlay}>
+            {player.isPlaying ? "⏸" : "▶"}
+          </button>
+          <button
+            type="button"
+            className={styles.controlButton}
+            onClick={player.next}
+            disabled={player.currentIndex === session.sentences.length - 1}
+          >
+            ⏭
+          </button>
         </div>
-        <input
-          type="range"
-          min={0.5}
-          max={1.5}
-          step={0.1}
-          value={player.speed}
-          onChange={(e) => player.setSpeed(Number(e.target.value))}
-          className={styles.slider}
-        />
-        <span className={styles.speedValue}>{player.speed.toFixed(1)}x</span>
+
+        <div className={styles.speedSection}>
+          <span className={styles.sectionLabel}>Speed</span>
+          <div className={styles.speedPresets}>
+            {SPEED_PRESETS.map((s) => (
+              <button
+                type="button"
+                key={s}
+                className={`${styles.presetButton} ${player.speed === s ? styles.presetActive : ""}`}
+                onClick={() => player.setSpeed(s)}
+              >
+                {s}x
+              </button>
+            ))}
+          </div>
+          <input
+            type="range"
+            min={0.5}
+            max={1.5}
+            step={0.1}
+            value={player.speed}
+            onChange={(e) => player.setSpeed(Number(e.target.value))}
+            className={styles.slider}
+          />
+          <span className={styles.speedValue}>{player.speed.toFixed(1)}x</span>
+        </div>
       </div>
     </div>
   );
