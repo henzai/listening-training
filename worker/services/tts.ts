@@ -1,8 +1,34 @@
 import type { Env, LLMSentence } from "../types";
 
+const FEMALE_VOICES = ["coral", "nova", "sage", "shimmer", "fable"] as const;
+const MALE_VOICES = ["ash", "echo", "onyx", "ballad", "alloy"] as const;
+type Voice = (typeof FEMALE_VOICES)[number] | (typeof MALE_VOICES)[number];
+
+function buildVoiceMap(sentences: LLMSentence[]): Map<string, Voice> {
+  const seen = new Map<string, Voice>();
+  let femaleIdx = 0;
+  let maleIdx = 0;
+
+  for (const s of sentences) {
+    if (!s.speaker || seen.has(s.speaker)) continue;
+    if (s.speaker_gender === "male") {
+      seen.set(s.speaker, MALE_VOICES[maleIdx % MALE_VOICES.length]);
+      maleIdx++;
+    } else {
+      seen.set(s.speaker, FEMALE_VOICES[femaleIdx % FEMALE_VOICES.length]);
+      femaleIdx++;
+    }
+  }
+  return seen;
+}
+
 const MAX_RETRIES = 2;
 
-async function generateSingleAudio(apiKey: string, text: string): Promise<ArrayBuffer> {
+async function generateSingleAudio(
+  apiKey: string,
+  text: string,
+  voice: Voice = "coral",
+): Promise<ArrayBuffer> {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     const response = await fetch("https://api.openai.com/v1/audio/speech", {
       method: "POST",
@@ -13,7 +39,7 @@ async function generateSingleAudio(apiKey: string, text: string): Promise<ArrayB
       body: JSON.stringify({
         model: "gpt-4o-mini-tts",
         input: text,
-        voice: "coral",
+        voice,
         response_format: "mp3",
       }),
     });
@@ -36,6 +62,8 @@ export async function generateAudioForSentences(
   sentenceIds: string[],
 ): Promise<void> {
   try {
+    const voiceMap = buildVoiceMap(sentences);
+
     // Generate audio in parallel (batches of 5 to avoid rate limits)
     const batchSize = 5;
     let totalDurationMs = 0;
@@ -47,7 +75,12 @@ export async function generateAudioForSentences(
       const results = await Promise.all(
         batch.map(async (sentence, batchIndex) => {
           const index = i + batchIndex;
-          const audioBuffer = await generateSingleAudio(env.OPENAI_API_KEY, sentence.text_en);
+          const voice = sentence.speaker ? voiceMap.get(sentence.speaker) : undefined;
+          const audioBuffer = await generateSingleAudio(
+            env.OPENAI_API_KEY,
+            sentence.text_en,
+            voice,
+          );
 
           const r2Key = `audio/${scriptId}/${index}.mp3`;
           await env.AUDIO_BUCKET.put(r2Key, audioBuffer, {

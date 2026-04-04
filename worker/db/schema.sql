@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS sentences (
   id TEXT PRIMARY KEY,
   script_id TEXT NOT NULL REFERENCES scripts(id) ON DELETE CASCADE,
   index_in_script INTEGER NOT NULL,
+  speaker TEXT,
   text_en TEXT NOT NULL,
   text_ja TEXT,
   audio_r2_key TEXT,

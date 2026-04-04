@@ -19,6 +19,7 @@ export interface Sentence {
   id: string;
   script_id: string;
   index_in_script: number;
+  speaker: string | null;
   text_en: string;
   text_ja: string | null;
   audio_r2_key: string | null;
@@ -32,6 +33,8 @@ export interface GenerateRequest {
 }
 
 export interface LLMSentence {
+  speaker?: string;
+  speaker_gender?: "male" | "female";
   text_en: string;
   text_ja: string;
 }

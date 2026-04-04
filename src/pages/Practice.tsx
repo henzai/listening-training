@@ -138,6 +138,9 @@ export function Practice() {
           >
             <span className={styles.sentenceIndex}>{i + 1}</span>
             <div className={styles.sentenceText}>
+              {s.speaker && (i === 0 || session.sentences[i - 1].speaker !== s.speaker) && (
+                <span className={styles.speakerLabel}>{s.speaker}</span>
+              )}
               {session.showEnglish && <p className={styles.textEn}>{s.text_en}</p>}
               {session.showJapanese && s.text_ja && <p className={styles.textJa}>{s.text_ja}</p>}
               {!session.showEnglish && !session.showJapanese && (

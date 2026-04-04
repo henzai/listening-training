@@ -13,6 +13,7 @@ export interface Sentence {
   id: string;
   script_id: string;
   index_in_script: number;
+  speaker: string | null;
   text_en: string;
   text_ja: string | null;
   audio_r2_key: string | null;

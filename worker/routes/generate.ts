@@ -35,9 +35,16 @@ generateRoutes.post("/generate", async (c) => {
     const sentenceId = crypto.randomUUID();
     sentenceIds.push(sentenceId);
     await c.env.DB.prepare(
-      "INSERT INTO sentences (id, script_id, index_in_script, text_en, text_ja) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO sentences (id, script_id, index_in_script, speaker, text_en, text_ja) VALUES (?, ?, ?, ?, ?, ?)",
     )
-      .bind(sentenceId, scriptId, i, sentences[i].text_en, sentences[i].text_ja)
+      .bind(
+        sentenceId,
+        scriptId,
+        i,
+        sentences[i].speaker ?? null,
+        sentences[i].text_en,
+        sentences[i].text_ja,
+      )
       .run();
   }
 

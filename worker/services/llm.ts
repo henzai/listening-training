@@ -2,11 +2,14 @@ import type { LLMSentence } from "../types";
 
 const TOPIC_PROMPTS: Record<string, string> = {
   business:
-    "a professional business scenario such as meetings, presentations, negotiations, or workplace communication",
-  daily: "everyday situations like shopping, dining, traveling, or casual conversations",
+    "a professional business conversation between 2-3 people (e.g., a meeting, negotiation, or interview). Assign each speaker a short English first name.",
+  daily:
+    "an everyday conversation between 2-3 people (e.g., at a restaurant, while traveling, or between friends). Assign each speaker a short English first name.",
   news: "a recent news topic covering current events, politics, science, or world affairs",
   tech: "technology topics such as software development, AI, startups, or digital trends",
 };
+
+const DIALOGUE_TOPICS = new Set(["business", "daily"]);
 
 const DIFFICULTY_INSTRUCTIONS: Record<string, string> = {
   intermediate:
@@ -25,6 +28,15 @@ export async function generateScript(
   const topicDesc = TOPIC_PROMPTS[topic] ?? topic;
   const difficultyDesc =
     DIFFICULTY_INSTRUCTIONS[difficulty] ?? DIFFICULTY_INSTRUCTIONS.intermediate;
+  const isDialogue = DIALOGUE_TOPICS.has(topic);
+
+  const jsonSchema = isDialogue
+    ? '{ "sentences": [{ "speaker": "Name", "speaker_gender": "male" or "female", "text_en": "English sentence", "text_ja": "Japanese translation" }] }'
+    : '{ "sentences": [{ "text_en": "English sentence", "text_ja": "Japanese translation" }] }';
+
+  const formatInstruction = isDialogue
+    ? "Generate a natural dialogue between the speakers. Each sentence must include the speaker's name and gender."
+    : "Generate a coherent passage.";
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -38,12 +50,13 @@ export async function generateScript(
       messages: [
         {
           role: "system",
-          content: `You are an English learning content creator. Generate a coherent English passage about the given topic, broken into individual sentences. Each sentence should be natural spoken English suitable for shadowing practice.
+          content: `You are an English learning content creator. Generate a coherent English script about the given topic, broken into individual sentences. Each sentence should be natural spoken English suitable for shadowing practice.
 
 ${difficultyDesc}
 
-Respond with a JSON object: { "sentences": [{ "text_en": "English sentence", "text_ja": "Japanese translation" }] }
-Generate 8-15 sentences that form a coherent passage.`,
+${formatInstruction}
+Respond with a JSON object: ${jsonSchema}
+Generate 8-15 sentences.`,
         },
         {
           role: "user",

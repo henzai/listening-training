@@ -108,6 +108,14 @@
   flex: 1;
 }
 
+.speakerLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .textEn {
   font-size: 1rem;
   line-height: 1.5;
