@@ -110,7 +110,7 @@ export async function generateScript(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "gpt-5.4-nano",
+      model: "gpt-5.4-mini",
       response_format: { type: "json_object" },
       messages: [
         {
