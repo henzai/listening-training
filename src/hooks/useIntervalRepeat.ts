@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { loadSettings, saveSettings } from "../lib/settings";
 
 interface UseIntervalRepeatOptions {
   onRepeatComplete: () => void;
@@ -11,9 +12,9 @@ export function useIntervalRepeat({
   onPlayCurrent,
   onEnded,
 }: UseIntervalRepeatOptions) {
-  const [repeatCount, setRepeatCount] = useState(1);
-  const [pauseDuration, setPauseDuration] = useState(1);
-  const [autoRepeat, setAutoRepeat] = useState(false);
+  const [repeatCount, setRepeatCount] = useState(() => loadSettings().repeatCount);
+  const [pauseDuration, setPauseDuration] = useState(() => loadSettings().pauseDuration);
+  const [autoRepeat, setAutoRepeat] = useState(() => loadSettings().autoRepeat);
   const currentRepeatRef = useRef(0);
   const pauseTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -52,6 +53,11 @@ export function useIntervalRepeat({
       clearTimeout(pauseTimerRef.current);
     }
   }, []);
+
+  // Persist settings changes
+  useEffect(() => {
+    saveSettings({ repeatCount, pauseDuration, autoRepeat });
+  }, [repeatCount, pauseDuration, autoRepeat]);
 
   // Cleanup timer on unmount
   useEffect(() => {

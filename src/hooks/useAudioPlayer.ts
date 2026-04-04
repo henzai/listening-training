@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { getAudioUrl } from "../lib/api";
+import { loadSettings, saveSettings } from "../lib/settings";
 
 interface UseAudioPlayerOptions {
   scriptId: string;
@@ -10,7 +11,7 @@ export function useAudioPlayer({ scriptId, sentenceCount }: UseAudioPlayerOption
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1.0);
+  const [speed, setSpeed] = useState(() => loadSettings().speed);
   const [preloaded, setPreloaded] = useState<Set<number>>(new Set());
 
   // Initialize audio element
@@ -34,6 +35,7 @@ export function useAudioPlayer({ scriptId, sentenceCount }: UseAudioPlayerOption
     if (audioRef.current) {
       audioRef.current.playbackRate = speed;
     }
+    saveSettings({ speed });
   }, [speed]);
 
   // Preload audio files
