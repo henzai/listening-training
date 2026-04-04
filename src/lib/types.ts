@@ -39,5 +39,3 @@ export const DIFFICULTIES: { value: Difficulty; label: string }[] = [
 ];
 
 export const SPEED_PRESETS = [0.7, 1.0, 1.2] as const;
-export const REPEAT_OPTIONS = [1, 2, 3, 5, Infinity] as const;
-export const PAUSE_OPTIONS = [0, 1, 2, 3] as const;

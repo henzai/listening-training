@@ -1,10 +1,9 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
-import { useIntervalRepeat } from "../hooks/useIntervalRepeat";
 import { usePracticeSession } from "../hooks/usePracticeSession";
 import type { PracticeMode } from "../lib/types";
-import { PAUSE_OPTIONS, REPEAT_OPTIONS, SPEED_PRESETS } from "../lib/types";
+import { SPEED_PRESETS } from "../lib/types";
 import styles from "./Practice.module.css";
 
 const MODE_LABELS: Record<PracticeMode, string> = {
@@ -23,6 +22,9 @@ export function Practice() {
     sentenceCount: session.sentences.length,
   });
 
+  const sentenceRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Auto-advance to next sentence when current one ends
   const handleNext = useCallback(() => {
     if (player.currentIndex < session.sentences.length - 1) {
       const nextIndex = player.currentIndex + 1;
@@ -31,15 +33,11 @@ export function Practice() {
     }
   }, [player, session.sentences.length]);
 
-  const handlePlayCurrent = useCallback(() => {
-    player.loadAndPlay(player.currentIndex);
-  }, [player]);
-
-  const repeat = useIntervalRepeat({
-    onRepeatComplete: handleNext,
-    onPlayCurrent: handlePlayCurrent,
-    onEnded: player.onEnded,
-  });
+  useEffect(() => {
+    return player.onEnded(() => {
+      handleNext();
+    });
+  }, [player.onEnded, handleNext]);
 
   // Mark as practiced when user starts playing
   // biome-ignore lint/correctness/useExhaustiveDependencies: markPracticed is stable
@@ -49,11 +47,13 @@ export function Practice() {
     }
   }, [player.isPlaying]);
 
-  // Reset repeat counter when sentence changes
-  // biome-ignore lint/correctness/useExhaustiveDependencies: trigger on sentence change
+  // Auto-scroll to current sentence
   useEffect(() => {
-    repeat.resetRepeatCounter();
-  }, [player.currentIndex, repeat]);
+    sentenceRefs.current[player.currentIndex]?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }, [player.currentIndex]);
 
   if (session.loading) {
     return (
@@ -73,8 +73,6 @@ export function Practice() {
       </div>
     );
   }
-
-  const currentSentence = session.sentences[player.currentIndex];
 
   return (
     <div className={styles.container}>
@@ -105,21 +103,6 @@ export function Practice() {
         ))}
       </div>
 
-      {/* Sentence Display */}
-      <div className={styles.sentenceArea}>
-        {currentSentence && (
-          <>
-            {session.showEnglish && <p className={styles.textEn}>{currentSentence.text_en}</p>}
-            {session.showJapanese && currentSentence.text_ja && (
-              <p className={styles.textJa}>{currentSentence.text_ja}</p>
-            )}
-            {!session.showEnglish && !session.showJapanese && (
-              <p className={styles.blindHint}>Sentence {player.currentIndex + 1}</p>
-            )}
-          </>
-        )}
-      </div>
-
       {/* Text Toggle */}
       <div className={styles.toggleRow}>
         <button
@@ -138,18 +121,30 @@ export function Practice() {
         </button>
       </div>
 
-      {/* Sentence Navigation (progress dots) */}
-      <div className={styles.dots}>
+      {/* Sentence List */}
+      <div className={styles.sentenceList}>
         {session.sentences.map((s, i) => (
           <button
             type="button"
             key={s.id}
-            className={`${styles.dot} ${i === player.currentIndex ? styles.dotActive : ""}`}
+            ref={(el) => {
+              sentenceRefs.current[i] = el;
+            }}
+            className={`${styles.sentenceItem} ${i === player.currentIndex ? styles.sentenceActive : ""}`}
             onClick={() => {
               player.goTo(i);
               player.loadAndPlay(i);
             }}
-          />
+          >
+            <span className={styles.sentenceIndex}>{i + 1}</span>
+            <div className={styles.sentenceText}>
+              {session.showEnglish && <p className={styles.textEn}>{s.text_en}</p>}
+              {session.showJapanese && s.text_ja && <p className={styles.textJa}>{s.text_ja}</p>}
+              {!session.showEnglish && !session.showJapanese && (
+                <p className={styles.blindHint}>Sentence {i + 1}</p>
+              )}
+            </div>
+          </button>
         ))}
       </div>
 
@@ -201,54 +196,6 @@ export function Practice() {
           className={styles.slider}
         />
         <span className={styles.speedValue}>{player.speed.toFixed(1)}x</span>
-      </div>
-
-      {/* Repeat Controls */}
-      <div className={styles.repeatSection}>
-        <div className={styles.repeatHeader}>
-          <span className={styles.sectionLabel}>Auto Repeat</span>
-          <button
-            type="button"
-            className={`${styles.toggleButton} ${repeat.autoRepeat ? styles.toggleActive : ""}`}
-            onClick={() => repeat.setAutoRepeat(!repeat.autoRepeat)}
-          >
-            {repeat.autoRepeat ? "ON" : "OFF"}
-          </button>
-        </div>
-        {repeat.autoRepeat && (
-          <div className={styles.repeatOptions}>
-            <div className={styles.repeatRow}>
-              <span className={styles.repeatLabel}>Repeat</span>
-              <div className={styles.repeatButtons}>
-                {REPEAT_OPTIONS.map((r) => (
-                  <button
-                    type="button"
-                    key={r}
-                    className={`${styles.presetButton} ${repeat.repeatCount === r ? styles.presetActive : ""}`}
-                    onClick={() => repeat.setRepeatCount(r)}
-                  >
-                    {r === Infinity ? "∞" : `${r}x`}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className={styles.repeatRow}>
-              <span className={styles.repeatLabel}>Pause</span>
-              <div className={styles.repeatButtons}>
-                {PAUSE_OPTIONS.map((p) => (
-                  <button
-                    type="button"
-                    key={p}
-                    className={`${styles.presetButton} ${repeat.pauseDuration === p ? styles.presetActive : ""}`}
-                    onClick={() => repeat.setPauseDuration(p)}
-                  >
-                    {p}s
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

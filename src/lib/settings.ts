@@ -1,17 +1,11 @@
 const STORAGE_KEY = "shadowing-settings";
 
-interface Settings {
+export interface Settings {
   speed: number;
-  repeatCount: number;
-  pauseDuration: number;
-  autoRepeat: boolean;
 }
 
 const DEFAULTS: Settings = {
   speed: 1.0,
-  repeatCount: 1,
-  pauseDuration: 1,
-  autoRepeat: false,
 };
 
 export function loadSettings(): Settings {
