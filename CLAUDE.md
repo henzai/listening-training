@@ -25,11 +25,8 @@ npm run deploy     # build + wrangler deploy
 
 ## Before Commit
 
-コミット前に必ず以下を実行し、エラー 0 を確認すること:
-
-```bash
-npm run lint && npm run build
-```
+`git commit` 実行前に PreToolUse hook が自動で `npm run lint`（Biome チェック）を実行する。
+lint エラーがあるとコミットがブロックされるため、事前に修正すること。
 
 ## Code Style
 
