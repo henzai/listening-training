@@ -52,7 +52,7 @@
 
 **目的**: D1 ラウンドトリップ削減、入力検証追加。API 契約の変更なし。
 
-- [ ] `worker/routes/generate.ts` — topic/difficulty の enum バリデーション追加
+- [x] `worker/routes/generate.ts` — topic/difficulty の enum バリデーション追加
   - 有効な topic: business, daily, news, tech, travel, academic, entertainment, health, sports
   - 有効な difficulty: intermediate, upper-intermediate, advanced
   - 無効値には 400 + エラーメッセージを返す

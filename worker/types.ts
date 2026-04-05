@@ -28,9 +28,25 @@ export interface Sentence {
   audio_format: string;
 }
 
+export const VALID_TOPICS = [
+  "business",
+  "daily",
+  "news",
+  "tech",
+  "travel",
+  "academic",
+  "entertainment",
+  "health",
+  "sports",
+] as const;
+export type Topic = (typeof VALID_TOPICS)[number];
+
+export const VALID_DIFFICULTIES = ["intermediate", "upper-intermediate", "advanced"] as const;
+export type Difficulty = (typeof VALID_DIFFICULTIES)[number];
+
 export interface GenerateRequest {
-  topic: string;
-  difficulty: string;
+  topic: Topic;
+  difficulty: Difficulty;
 }
 
 export interface LLMSentence {

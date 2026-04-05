@@ -1,7 +1,13 @@
 import { Hono } from "hono";
 import { generateScript } from "../services/llm";
 import { generateAudioForSentences } from "../services/tts";
-import type { Env, GenerateRequest, LLMSentence } from "../types";
+import {
+  type Env,
+  type GenerateRequest,
+  type LLMSentence,
+  VALID_DIFFICULTIES,
+  VALID_TOPICS,
+} from "../types";
 
 export const generateRoutes = new Hono<{ Bindings: Env }>();
 
@@ -10,6 +16,22 @@ generateRoutes.post("/generate", async (c) => {
 
   if (!topic || !difficulty) {
     return c.json({ error: "topic and difficulty are required" }, 400);
+  }
+
+  if (!(VALID_TOPICS as readonly string[]).includes(topic)) {
+    return c.json(
+      { error: `Invalid topic "${topic}". Must be one of: ${VALID_TOPICS.join(", ")}` },
+      400,
+    );
+  }
+
+  if (!(VALID_DIFFICULTIES as readonly string[]).includes(difficulty)) {
+    return c.json(
+      {
+        error: `Invalid difficulty "${difficulty}". Must be one of: ${VALID_DIFFICULTIES.join(", ")}`,
+      },
+      400,
+    );
   }
 
   const scriptId = crypto.randomUUID();
