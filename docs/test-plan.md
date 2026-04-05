@@ -91,7 +91,7 @@ miniflare 経由の D1/R2 バインディングを使い、ルートハンドラ
 
 - [ ] **2-2. ルートテスト**
   - [x] `worker/index.test.ts` — GET /api/v1/health → `{ ok: true }`
-  - [ ] `worker/routes/audio.test.ts`
+  - [x] `worker/routes/audio.test.ts`
     - R2 にオブジェクトなし → 404
     - R2 にオブジェクト配置後 → 正しい Content-Type/Cache-Control
   - [ ] `worker/routes/scripts.test.ts`
