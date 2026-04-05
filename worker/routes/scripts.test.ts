@@ -18,7 +18,9 @@ async function insertScript(id: string, overrides: Record<string, unknown> = {})
   const binds = d.created_at
     ? [id, d.topic, d.title, d.difficulty, d.sentence_count, d.status, d.created_at]
     : [id, d.topic, d.title, d.difficulty, d.sentence_count, d.status];
-  await env.DB.prepare(cols).bind(...binds).run();
+  await env.DB.prepare(cols)
+    .bind(...binds)
+    .run();
 }
 
 async function insertSentence(
