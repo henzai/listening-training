@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import app from "../index";
-import { applySchema } from "../test-helpers";
+import { applySchema, cleanTables } from "../test-helpers";
 
 async function insertScript(id: string, overrides: Record<string, unknown> = {}) {
   const defaults = {
@@ -42,6 +42,10 @@ async function insertSentence(
 describe("script routes", () => {
   beforeAll(async () => {
     await applySchema();
+  });
+
+  beforeEach(async () => {
+    await cleanTables();
   });
 
   describe("GET /api/v1/scripts", () => {

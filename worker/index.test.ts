@@ -1,11 +1,15 @@
 import { env } from "cloudflare:workers";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import app from "./index";
-import { applySchema } from "./test-helpers";
+import { applySchema, cleanTables } from "./test-helpers";
 
 describe("GET /api/v1/health", () => {
   beforeAll(async () => {
     await applySchema();
+  });
+
+  beforeEach(async () => {
+    await cleanTables();
   });
 
   it("returns { ok: true }", async () => {

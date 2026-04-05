@@ -2,7 +2,7 @@ import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test"
 import { env } from "cloudflare:workers";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import app from "../index";
-import { applySchema } from "../test-helpers";
+import { applySchema, cleanTables } from "../test-helpers";
 import type { LLMSentence } from "../types";
 
 vi.mock("../services/llm", () => ({
@@ -43,10 +43,11 @@ describe("generate routes", () => {
     await applySchema();
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.mocked(generateScript).mockReset();
     vi.mocked(generateAudioForSentences).mockReset();
     vi.mocked(generateAudioForSentences).mockResolvedValue(undefined);
+    await cleanTables();
   });
 
   describe("POST /api/v1/generate", () => {

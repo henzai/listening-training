@@ -9,3 +9,10 @@ const statements = schema
 export async function applySchema(): Promise<void> {
   await env.DB.batch(statements.map((s) => env.DB.prepare(s)));
 }
+
+export async function cleanTables(): Promise<void> {
+  await env.DB.batch([
+    env.DB.prepare("DELETE FROM sentences"),
+    env.DB.prepare("DELETE FROM scripts"),
+  ]);
+}
