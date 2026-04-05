@@ -1,4 +1,4 @@
-import { TTS_MODEL } from "../constants";
+import { TTS_MODEL, audioR2Key } from "../constants";
 import type { Env, LLMSentence } from "../types";
 
 const FEMALE_VOICES = ["coral", "nova", "sage", "shimmer", "fable"] as const;
@@ -113,7 +113,7 @@ export async function generateAudioForSentences(
             voice,
           );
 
-          const r2Key = `audio/${scriptId}/${index}.mp3`;
+          const r2Key = audioR2Key(scriptId, index);
           await env.AUDIO_BUCKET.put(r2Key, audioBuffer, {
             httpMetadata: { contentType: "audio/mpeg" },
           });

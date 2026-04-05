@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { audioR2Key } from "../constants";
 import type { Env } from "../types";
 
 export const audioRoutes = new Hono<{ Bindings: Env }>();
@@ -6,7 +7,7 @@ export const audioRoutes = new Hono<{ Bindings: Env }>();
 audioRoutes.get("/audio/:scriptId/:index", async (c) => {
   const scriptId = c.req.param("scriptId");
   const index = c.req.param("index");
-  const key = `audio/${scriptId}/${index}.mp3`;
+  const key = audioR2Key(scriptId, Number(index));
 
   const object = await c.env.AUDIO_BUCKET.get(key);
   if (!object) {
