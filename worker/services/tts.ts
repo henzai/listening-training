@@ -142,7 +142,8 @@ export async function generateAudioForSentences(
     await env.DB.prepare("UPDATE scripts SET status = 'ready', total_duration_ms = ? WHERE id = ?")
       .bind(totalDurationMs, scriptId)
       .run();
-  } catch {
+  } catch (e) {
+    console.error("Audio generation failed for script:", scriptId, e);
     // Mark as error on failure
     await env.DB.prepare("UPDATE scripts SET status = 'error' WHERE id = ?").bind(scriptId).run();
   }

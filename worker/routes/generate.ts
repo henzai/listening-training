@@ -43,7 +43,8 @@ generateRoutes.post("/generate", async (c) => {
     const result = await generateScript(c.env.OPENAI_API_KEY, topic, difficulty);
     title = result.title;
     sentences = result.sentences;
-  } catch {
+  } catch (e) {
+    console.error("Failed to generate script:", e);
     return c.json({ error: "Failed to generate script" }, 500);
   }
 
