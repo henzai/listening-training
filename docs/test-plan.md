@@ -116,7 +116,6 @@ miniflare 経由の D1/R2 バインディングを使い、ルートハンドラ
 Phase 1 完了後、Phase 2 と並行して実施可能。
 
 - [ ] `src/lib/api.test.ts` — `globalThis.fetch` をモックし、リクエスト/レスポンスの検証
-- [ ] `src/hooks/useImmersiveControls.test.ts` — `renderHook` + `vi.useFakeTimers()` で表示/非表示タイマーのテスト
 - [ ] `src/pages/Settings.test.tsx` — スモークテスト (レンダリング、プリセット表示)
 
 ---

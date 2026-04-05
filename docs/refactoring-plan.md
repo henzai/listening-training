@@ -12,9 +12,9 @@
 
 **目的**: 未使用コードを除去し、見通しを良くする。preload 削除で不要なネットワークリクエストも修正。
 
-- [ ] `src/hooks/useImmersiveControls.ts` をファイルごと削除（どこからも import されていない）
-- [ ] `docs/test-plan.md` Phase 3 から `useImmersiveControls.test.ts` のエントリを削除
-- [ ] `src/hooks/useAudioPlayer.ts` から未使用メンバーを削除:
+- [x] `src/hooks/useImmersiveControls.ts` をファイルごと削除（どこからも import されていない）
+- [x] `docs/test-plan.md` Phase 3 から `useImmersiveControls.test.ts` のエントリを削除
+- [x] `src/hooks/useAudioPlayer.ts` から未使用メンバーを削除:
   - `preloaded` state (line 15) + preload useEffect (lines 42-51) — Service Worker の CacheFirst が audio キャッシュ済みで不要
   - `play` (lines 71-73), `togglePlay` (lines 80-86), `next` (lines 99-101), `prev` (lines 103-105) — Practice.tsx が唯一の consumer で未使用
   - return object から `audioRef` を除外

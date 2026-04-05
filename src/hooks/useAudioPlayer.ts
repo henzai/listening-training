@@ -12,8 +12,6 @@ export function useAudioPlayer({ scriptId, sentenceCount }: UseAudioPlayerOption
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(() => loadSettings().speed);
-  const [preloaded, setPreloaded] = useState<Set<number>>(new Set());
-
   // Initialize audio element
   useEffect(() => {
     const audio = new Audio();
@@ -38,18 +36,6 @@ export function useAudioPlayer({ scriptId, sentenceCount }: UseAudioPlayerOption
     saveSettings({ speed });
   }, [speed]);
 
-  // Preload audio files
-  useEffect(() => {
-    const loaded = new Set<number>();
-    for (let i = 0; i < sentenceCount; i++) {
-      const audio = new Audio(getAudioUrl(scriptId, i));
-      audio.addEventListener("canplaythrough", () => {
-        loaded.add(i);
-        setPreloaded(new Set(loaded));
-      });
-    }
-  }, [scriptId, sentenceCount]);
-
   const loadAndPlay = useCallback(
     async (index: number) => {
       const audio = audioRef.current;
@@ -68,22 +54,10 @@ export function useAudioPlayer({ scriptId, sentenceCount }: UseAudioPlayerOption
     [scriptId, speed],
   );
 
-  const play = useCallback(() => {
-    loadAndPlay(currentIndex);
-  }, [currentIndex, loadAndPlay]);
-
   const pause = useCallback(() => {
     audioRef.current?.pause();
     setIsPlaying(false);
   }, []);
-
-  const togglePlay = useCallback(() => {
-    if (isPlaying) {
-      pause();
-    } else {
-      play();
-    }
-  }, [isPlaying, play, pause]);
 
   const goTo = useCallback(
     (index: number) => {
@@ -95,14 +69,6 @@ export function useAudioPlayer({ scriptId, sentenceCount }: UseAudioPlayerOption
     },
     [sentenceCount, isPlaying, loadAndPlay],
   );
-
-  const next = useCallback(() => {
-    goTo(currentIndex + 1);
-  }, [currentIndex, goTo]);
-
-  const prev = useCallback(() => {
-    goTo(currentIndex - 1);
-  }, [currentIndex, goTo]);
 
   const onEnded = useCallback((handler: () => void) => {
     const audio = audioRef.current;
@@ -116,15 +82,9 @@ export function useAudioPlayer({ scriptId, sentenceCount }: UseAudioPlayerOption
     isPlaying,
     speed,
     setSpeed,
-    preloaded,
-    play,
     pause,
-    togglePlay,
     goTo,
-    next,
-    prev,
     loadAndPlay,
     onEnded,
-    audioRef,
   };
 }
