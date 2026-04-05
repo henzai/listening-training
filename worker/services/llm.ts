@@ -97,9 +97,10 @@ export async function generateScript(
 
   const formatInstruction = isDialogue
     ? `Generate a natural dialogue for this scenario: ${scenario.description}. Follow these rules:
-- Choose either 2 or 3 speakers with short English first names (vary this across generations).
-- A speaker may say multiple sentences in a row before the other person responds.
-- Vary the turn lengths: some turns are 1 sentence, others are 2-3 sentences.
+- Exactly 2 speakers with short English first names.
+- Speakers react to each other: acknowledge, agree, disagree, ask follow-ups, or build on what was said.
+- Give the conversation an arc: a natural opening, development of the topic, and a sense of closure.
+- Vary turn lengths: some turns are 1 sentence, others 2-3. A speaker may say multiple sentences before the other responds.
 - Use the 'speaker' and 'speaker_gender' fields to identify who is speaking. The 'text_en' field must contain ONLY the spoken words — do NOT prefix it with the speaker's name or a colon.`
     : `Generate a coherent passage for this scenario: ${scenario.description}.`;
 
@@ -128,7 +129,7 @@ ${formatInstruction}
 Output format: Respond with a JSON object matching this structure:
 ${jsonSchema}
 
-Generate 8-15 sentences total.`,
+Generate 11-25 sentences total.`,
         },
         {
           role: "user",
