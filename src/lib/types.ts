@@ -1,38 +1,7 @@
-export interface Script {
-  id: string;
-  topic: string;
-  title: string | null;
-  difficulty: string;
-  sentence_count: number;
-  total_duration_ms: number | null;
-  status: string;
-  last_practiced_at: string | null;
-  created_at: string;
-}
+import type { Difficulty, Topic } from "../../shared/types";
 
-export interface Sentence {
-  id: string;
-  script_id: string;
-  index_in_script: number;
-  speaker: string | null;
-  text_en: string;
-  text_ja: string | null;
-  audio_r2_key: string | null;
-  audio_duration_ms: number | null;
-  audio_format: string;
-}
-
-export type Topic =
-  | "business"
-  | "daily"
-  | "news"
-  | "tech"
-  | "travel"
-  | "academic"
-  | "entertainment"
-  | "health"
-  | "sports";
-export type Difficulty = "intermediate" | "upper-intermediate" | "advanced";
+export type { Difficulty, Script, Sentence, Topic } from "../../shared/types";
+export { VALID_DIFFICULTIES, VALID_TOPICS } from "../../shared/types";
 
 export const TOPICS: { value: Topic; label: string }[] = [
   { value: "business", label: "Business" },
