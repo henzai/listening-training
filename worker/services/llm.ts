@@ -101,6 +101,7 @@ export async function generateScript(
 - Speakers react to each other: acknowledge, agree, disagree, ask follow-ups, or build on what was said.
 - Give the conversation an arc: a natural opening, development of the topic, and a sense of closure.
 - Vary turn lengths: some turns are 1 sentence, others 2-3. A speaker may say multiple sentences before the other responds.
+- Before writing, decide each speaker's role in the scenario (e.g., Speaker A = the doctor, Speaker B = the patient). Keep these roles fixed — never swap who plays which part mid-conversation.
 - Use the 'speaker' and 'speaker_gender' fields to identify who is speaking. The 'text_en' field must contain ONLY the spoken words — do NOT prefix it with the speaker's name or a colon.`
     : `Generate a coherent passage for this scenario: ${scenario.description}.`;
 
