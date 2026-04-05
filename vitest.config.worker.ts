@@ -11,6 +11,12 @@ export default defineProject({
   test: {
     name: "worker",
     include: ["worker/**/*.test.ts"],
-    setupFiles: ["./worker/vitest-setup.ts"],
+    onUnhandledError(error) {
+      // @cloudflare/vitest-pool-workers tries RPC with the default export (Hono app),
+      // which is not a WorkerEntrypoint subclass. Suppress this known rejection.
+      if (error instanceof TypeError && error.message.includes("WorkerEntrypoint")) {
+        return false;
+      }
+    },
   },
 });
