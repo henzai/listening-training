@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { app } from "../index";
+import app from "../index";
 import { applySchema, cleanTables } from "../test-helpers";
 
 describe("audio routes", () => {

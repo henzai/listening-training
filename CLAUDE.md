@@ -30,10 +30,10 @@ npm run test:worker # vitest run --project worker
 npm run test:app   # vitest run --project app
 ```
 
-## Before Commit
+## Git Workflow
 
-`git commit` 実行前に PreToolUse hook が自動で `npm run lint`（Biome チェック）を実行する。
-lint エラーがあるとコミットがブロックされるため、事前に修正すること。
+- main ブランチへの直接 push は禁止（ブランチ保護ルール）。変更は PR を作成し、CI パス後にマージすること。
+- `git commit` 実行前に PreToolUse hook が自動で `npm run lint`（Biome チェック）を実行する。lint エラーがあるとコミットがブロックされるため、事前に修正すること。
 
 ## Code Style
 
