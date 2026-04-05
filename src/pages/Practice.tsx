@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { SpeedControl } from "../components/SpeedControl";
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
 import { usePracticeSession } from "../hooks/usePracticeSession";
-import { SPEED_PRESETS } from "../lib/types";
 import styles from "./Practice.module.css";
 
 export function Practice() {
@@ -88,7 +88,7 @@ export function Practice() {
   if (session.loading) {
     return (
       <div className={styles.loading}>
-        <div className={styles.spinner} />
+        <div className="spinner" />
       </div>
     );
   }
@@ -182,31 +182,7 @@ export function Practice() {
 
       {/* Bottom overlay: speed — visible while scrolling */}
       <div className={`${styles.overlayBottom} ${bottomOverlayClass}`}>
-        <div className={styles.speedSection}>
-          <span className={styles.sectionLabel}>Speed</span>
-          <div className={styles.speedPresets}>
-            {SPEED_PRESETS.map((s) => (
-              <button
-                type="button"
-                key={s}
-                className={`${styles.presetButton} ${player.speed === s ? styles.presetActive : ""}`}
-                onClick={() => player.setSpeed(s)}
-              >
-                {s}x
-              </button>
-            ))}
-          </div>
-          <input
-            type="range"
-            min={0.5}
-            max={1.5}
-            step={0.1}
-            value={player.speed}
-            onChange={(e) => player.setSpeed(Number(e.target.value))}
-            className={styles.slider}
-          />
-          <span className={styles.speedValue}>{player.speed.toFixed(1)}x</span>
-        </div>
+        <SpeedControl speed={player.speed} onSpeedChange={player.setSpeed} />
       </div>
     </div>
   );

@@ -30,7 +30,7 @@ export function Library() {
   if (loading) {
     return (
       <div className={styles.loading}>
-        <div className={styles.spinner} />
+        <div className="spinner" />
       </div>
     );
   }

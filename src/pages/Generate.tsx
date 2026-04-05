@@ -100,7 +100,7 @@ export function Generate() {
 
       {generating ? (
         <div className={styles.progress}>
-          <div className={styles.spinner} />
+          <div className="spinner" />
           <p>
             音声生成中... {progress.completed}/{progress.total || "?"}
           </p>

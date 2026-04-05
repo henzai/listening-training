@@ -30,19 +30,19 @@
 
 ### SpeedControl
 
-- [ ] `src/components/SpeedControl.tsx` + `SpeedControl.module.css` 新規作成
+- [x] `src/components/SpeedControl.tsx` + `SpeedControl.module.css` 新規作成
   - Props: `speed: number`, `onSpeedChange: (speed: number) => void`
   - JSX: Practice.tsx lines 184-210 / Settings.tsx lines 19-43 から抽出（構造同一、変数名のみ異なる）
   - CSS: Practice.module.css lines 171-218 / Settings.module.css lines 14-61（バイト単位で同一）
-- [ ] `src/pages/Practice.tsx` — speed セクション JSX を `<SpeedControl speed={player.speed} onSpeedChange={player.setSpeed} />` に置換
-- [ ] `src/pages/Settings.tsx` — speed セクション JSX を `<SpeedControl speed={settings.speed} onSpeedChange={(s) => update({ speed: s })} />` に置換
-- [ ] `Practice.module.css` / `Settings.module.css` から speed 関連 CSS を削除
+- [x] `src/pages/Practice.tsx` — speed セクション JSX を `<SpeedControl speed={player.speed} onSpeedChange={player.setSpeed} />` に置換
+- [x] `src/pages/Settings.tsx` — speed セクション JSX を `<SpeedControl speed={settings.speed} onSpeedChange={(s) => update({ speed: s })} />` に置換
+- [x] `Practice.module.css` / `Settings.module.css` から speed 関連 CSS を削除
 
 ### Spinner
 
-- [ ] `src/index.css` にグローバル `.spinner` + `@keyframes spin` 追加（3 ファイルで完全同一の定義）
-- [ ] `Practice.module.css`, `Library.module.css`, `Generate.module.css` から `.spinner` + `@keyframes spin` 削除
-- [ ] 各ページ tsx で `className={styles.spinner}` → `className="spinner"` に変更
+- [x] `src/index.css` にグローバル `.spinner` + `@keyframes spin` 追加（3 ファイルで完全同一の定義）
+- [x] `Practice.module.css`, `Library.module.css`, `Generate.module.css` から `.spinner` + `@keyframes spin` 削除
+- [x] 各ページ tsx で `className={styles.spinner}` → `className="spinner"` に変更
 
 **検証**: `npm test` → `npm run lint` → `npm run build`。Practice/Settings の speed 操作、各ページの loading spinner 表示を目視確認。
 
