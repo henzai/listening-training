@@ -40,7 +40,7 @@
 
 ---
 
-## Phase E: Backend 堅牢性改善
+## Phase E: Backend 堅牢性改善 ✅
 
 **目的**: ランタイムエラーの防止、デバッグ容易性の向上、無駄な API コールの削減。
 
@@ -48,34 +48,34 @@
 
 `audio/${scriptId}/${index}.mp3` が 2 箇所でハードコードされている。フォーマット変更時にどちらかの更新漏れを防ぐ。
 
-- [ ] `worker/constants.ts` に `audioR2Key(scriptId: string, index: number): string` を追加
-- [ ] `worker/routes/audio.ts:9` — ヘルパー使用に置換
-- [ ] `worker/services/tts.ts:116` — ヘルパー使用に置換
+- [x] `worker/constants.ts` に `audioR2Key(scriptId: string, index: number): string` を追加
+- [x] `worker/routes/audio.ts:9` — ヘルパー使用に置換
+- [x] `worker/services/tts.ts:116` — ヘルパー使用に置換
 
 ### E-2. LLM レスポンスの JSON parse 安全化
 
 `worker/services/llm.ts:163` で `JSON.parse()` が try-catch なし。OpenAI が不正な JSON を返した場合にクラッシュする。
 
-- [ ] `JSON.parse` を try-catch で囲み、パース失敗時は意味のあるエラーメッセージを throw
-- [ ] `data.choices[0]` の存在チェックを追加
+- [x] `JSON.parse` を try-catch で囲み、パース失敗時は意味のあるエラーメッセージを throw
+- [x] `data.choices[0]` の存在チェックを追加
 
 ### E-3. TTS リトライ対象の限定
 
 `worker/services/tts.ts:76-84` で全ての非 ok レスポンスをリトライしている。400 (Bad Request) などの永続的なエラーでもリトライし、API クォータを浪費する。
 
-- [ ] 429 (Rate Limit) / 5xx のみリトライ、4xx はそのまま throw
+- [x] 429 (Rate Limit) / 5xx のみリトライ、4xx はそのまま throw
 
 ### E-4. catch ブロックのエラーログ追加
 
 `generate.ts:46` と `tts.ts:143` の catch ブロックが空。障害時のデバッグが不可能。
 
-- [ ] `console.error` でエラー内容をログ出力
+- [x] `console.error` でエラー内容をログ出力
 
 ### E-5. ステータスチェッククエリの統合
 
 `worker/routes/generate.ts:86-99` で scripts テーブルと sentences テーブルを 2 回クエリしている。
 
-- [ ] LEFT JOIN + COUNT で 1 クエリに統合:
+- [x] LEFT JOIN + COUNT で 1 クエリに統合:
   ```sql
   SELECT s.status, s.sentence_count,
          COUNT(sn.audio_r2_key) AS completed_audio
@@ -119,5 +119,5 @@ test-plan Phase 2 を先に実装し、Worker ルートの統合テストを saf
 | 4 | ~~Phase D~~ ✅ | — |
 | 5 | **test-plan Phase 2** — Worker ルート統合テスト | — |
 | 6 | **Phase C** — DB バッチ操作 | テストが safety net |
-| 7 | **Phase E** — Backend 堅牢性改善 | テストが safety net |
+| 7 | ~~Phase E~~ ✅ — Backend 堅牢性改善 | テストが safety net |
 | 8 | test-plan Phase 3-4 — Frontend テスト + カバレッジ | — |
