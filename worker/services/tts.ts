@@ -128,12 +128,14 @@ export async function generateAudioForSentences(
       // Update sentence records with audio info
       for (const result of results) {
         totalDurationMs += result.durationMs;
-        await env.DB.prepare(
-          "UPDATE sentences SET audio_r2_key = ?, audio_duration_ms = ? WHERE id = ?",
-        )
-          .bind(result.r2Key, result.durationMs, result.id)
-          .run();
       }
+      await env.DB.batch(
+        results.map((result) =>
+          env.DB.prepare(
+            "UPDATE sentences SET audio_r2_key = ?, audio_duration_ms = ? WHERE id = ?",
+          ).bind(result.r2Key, result.durationMs, result.id),
+        ),
+      );
     }
 
     // Mark script as ready

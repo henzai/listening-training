@@ -33,8 +33,8 @@
 
 **目的**: D1 ラウンドトリップ削減。API 契約の変更なし。
 
-- [ ] `worker/routes/generate.ts` — ループ内 INSERT (lines 59-73) を `db.batch()` で 1 回に集約
-- [ ] `worker/services/tts.ts` — UPDATE ループ (lines 129-135) を `db.batch()` でバッチ単位に集約
+- [x] `worker/routes/generate.ts` — ループ内 INSERT (lines 59-73) を `db.batch()` で 1 回に集約
+- [x] `worker/services/tts.ts` — UPDATE ループ (lines 129-135) を `db.batch()` でバッチ単位に集約
 
 **検証**: `npm test` → `npm run lint` → `npm run build` → `npm run preview` で新規スクリプト生成成功確認
 

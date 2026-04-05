@@ -56,22 +56,14 @@ generateRoutes.post("/generate", async (c) => {
 
   // Insert sentence records
   const sentenceIds: string[] = [];
-  for (let i = 0; i < sentences.length; i++) {
+  const insertStatements = sentences.map((sentence, i) => {
     const sentenceId = crypto.randomUUID();
     sentenceIds.push(sentenceId);
-    await c.env.DB.prepare(
+    return c.env.DB.prepare(
       "INSERT INTO sentences (id, script_id, index_in_script, speaker, text_en, text_ja) VALUES (?, ?, ?, ?, ?, ?)",
-    )
-      .bind(
-        sentenceId,
-        scriptId,
-        i,
-        sentences[i].speaker ?? null,
-        sentences[i].text_en,
-        sentences[i].text_ja,
-      )
-      .run();
-  }
+    ).bind(sentenceId, scriptId, i, sentence.speaker ?? null, sentence.text_en, sentence.text_ja);
+  });
+  await c.env.DB.batch(insertStatements);
 
   // Generate audio in background (non-blocking)
   c.executionCtx.waitUntil(
