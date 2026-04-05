@@ -136,6 +136,12 @@ describe("script routes", () => {
       const r2Obj = await env.AUDIO_BUCKET.get("audio/del-1/0.mp3");
       expect(r2Obj).toBeNull();
     });
+
+    it("returns ok for non-existent script", async () => {
+      const res = await app.request("/api/v1/scripts/no-such-id", { method: "DELETE" }, env);
+      expect(res.status).toBe(200);
+      expect(await res.json()).toEqual({ ok: true });
+    });
   });
 
   describe("PATCH /api/v1/scripts/:scriptId/progress", () => {
@@ -157,6 +163,16 @@ describe("script routes", () => {
         .bind("prog-1")
         .first<{ last_practiced_at: string | null }>();
       expect(after?.last_practiced_at).not.toBeNull();
+    });
+
+    it("returns ok for non-existent script", async () => {
+      const res = await app.request(
+        "/api/v1/scripts/no-such-id/progress",
+        { method: "PATCH" },
+        env,
+      );
+      expect(res.status).toBe(200);
+      expect(await res.json()).toEqual({ ok: true });
     });
   });
 });
