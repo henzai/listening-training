@@ -21,6 +21,10 @@ npm run lint       # biome check (読み取り専用)
 npm run check      # biome check --write (自動修正)
 npm run format     # biome format --write
 npm run deploy     # build + wrangler deploy
+npm test           # vitest run (全テスト)
+npm run test:watch # vitest (watch モード)
+npm run test:worker # vitest run --project worker
+npm run test:app   # vitest run --project app
 ```
 
 ## Before Commit

@@ -1,6 +1,6 @@
-import { defineWorkspaceConfig } from "@cloudflare/vitest-pool-workers/config";
+import { defineProject } from "vitest/config";
 
-export default defineWorkspaceConfig({
+export default defineProject({
   test: {
     name: "worker",
     include: ["worker/**/*.test.ts"],
