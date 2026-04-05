@@ -94,7 +94,7 @@ miniflare 経由の D1/R2 バインディングを使い、ルートハンドラ
   - [x] `worker/routes/audio.test.ts`
     - R2 にオブジェクトなし → 404
     - R2 にオブジェクト配置後 → 正しい Content-Type/Cache-Control
-  - [ ] `worker/routes/scripts.test.ts`
+  - [x] `worker/routes/scripts.test.ts`
     - GET /scripts: 空配列 → データ挿入後に取得
     - GET /scripts/:id: 存在する/しない script
     - DELETE /scripts/:id: cascade 削除の検証
