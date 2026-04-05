@@ -80,6 +80,16 @@ const DIFFICULTY_INSTRUCTIONS: Record<string, string> = {
     "Use complex, natural English with idioms, phrasal verbs, and nuanced vocabulary. TOEIC 800-900 level. Sentences can be 12-25 words.",
 };
 
+/** Strip any "SpeakerName: " prefix from text_en (safety net for LLM inconsistency) */
+export function stripSpeakerPrefixes(sentences: LLMSentence[]): LLMSentence[] {
+  for (const s of sentences) {
+    if (s.speaker && s.text_en.startsWith(`${s.speaker}:`)) {
+      s.text_en = s.text_en.slice(s.speaker.length + 1).trimStart();
+    }
+  }
+  return sentences;
+}
+
 export async function generateScript(
   apiKey: string,
   topic: string,
@@ -154,12 +164,7 @@ Generate 11-25 sentences total.`,
     sentences: LLMSentence[];
   };
 
-  // Strip any "SpeakerName: " prefix from text_en (safety net for LLM inconsistency)
-  for (const s of parsed.sentences) {
-    if (s.speaker && s.text_en.startsWith(`${s.speaker}:`)) {
-      s.text_en = s.text_en.slice(s.speaker.length + 1).trimStart();
-    }
-  }
+  stripSpeakerPrefixes(parsed.sentences);
 
   return { title: parsed.title ?? "", sentences: parsed.sentences };
 }

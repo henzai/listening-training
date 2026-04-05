@@ -28,7 +28,7 @@ const DEFAULT_VOICE_CONFIG: TopicVoiceConfig = {
   default: "coral",
 };
 
-function buildVoiceMap(sentences: LLMSentence[], topic: string): Map<string, Voice> {
+export function buildVoiceMap(sentences: LLMSentence[], topic: string): Map<string, Voice> {
   const config = TOPIC_VOICES[topic] ?? DEFAULT_VOICE_CONFIG;
   const seen = new Map<string, Voice>();
   let femaleIdx = 0;
