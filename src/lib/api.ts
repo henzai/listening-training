@@ -51,6 +51,10 @@ export function updateProgress(scriptId: string) {
   });
 }
 
+export function getScriptUrl(scriptId: string) {
+  return `${BASE}/scripts/${scriptId}`;
+}
+
 export function getAudioUrl(scriptId: string, index: number) {
   return `${BASE}/audio/${scriptId}/${index}`;
 }

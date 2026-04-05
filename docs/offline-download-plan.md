@@ -33,9 +33,21 @@ Workbox の expiration (`maxEntries: 500, maxAgeSeconds: 30日`) について:
 
 ## 実装タスク
 
+### Step 0: API ヘルパー追加
+
+- [x] `src/lib/api.ts` に `getScriptUrl` を追加
+
+```typescript
+export function getScriptUrl(scriptId: string) {
+  return `${BASE}/scripts/${scriptId}`;
+}
+```
+
+`getAudioUrl` と同じパターン。`scriptCache.ts` でキャッシュキーとして使用する。
+
 ### Step 1: キャッシュコアロジック
 
-- [ ] `src/lib/scriptCache.ts` を新規作成
+- [x] `src/lib/scriptCache.ts` を新規作成
 
 ```
 定数:
@@ -53,15 +65,17 @@ Workbox の expiration (`maxEntries: 500, maxAgeSeconds: 30日`) について:
 
   downloadScript(scriptId, onProgress, signal?: AbortSignal): Promise<void>
     1. fetch script+sentences
+       - URL は getScriptUrl(scriptId) を使用（キャッシュキーと一致させる）
        - response.ok チェック（失敗なら throw）
-       - clone() → "offline-scripts" に put（cache と parse 両方に使うため clone 必須）
+       - clone() → "offline-scripts" に put（key = scriptUrl, cache と parse 両方に使うため clone 必須）
        - parse して sentenceCount 取得
     2. 音声を並行3本で fetch → 各 response.ok チェック → "audio-cache" に put
+       - URL は getAudioUrl(scriptId, index) を使用
        - signal が abort されたら即中断
     3. 完了後 localStorage に記録
 
   getCachedScript(scriptId): Promise<{script, sentences} | null>
-    "offline-scripts" から match → parse
+    "offline-scripts" から getScriptUrl(scriptId) で match → parse
 
   clearScriptCache(scriptId): Promise<void>
     両キャッシュから削除 + localStorage 除去
@@ -71,7 +85,7 @@ Workbox の expiration (`maxEntries: 500, maxAgeSeconds: 30日`) について:
 
 ### Step 2: React 状態管理 hook
 
-- [ ] `src/hooks/useScriptDownload.ts` を新規作成
+- [x] `src/hooks/useScriptDownload.ts` を新規作成
 
 ```
 state:
@@ -93,8 +107,8 @@ cleanup:
 
 ### Step 3: ダウンロードボタン UI
 
-- [ ] `src/components/DownloadButton.tsx` を新規作成
-- [ ] `src/components/DownloadButton.module.css` を新規作成
+- [x] `src/components/DownloadButton.tsx` を新規作成
+- [x] `src/components/DownloadButton.module.css` を新規作成
 
 3 状態の表示:
 - **未DL**: ↓ アイコン → tap で DL 開始
@@ -105,9 +119,9 @@ cleanup:
 
 ### Step 4: Library 画面統合
 
-- [ ] `src/pages/Library.tsx` を変更 — `useScriptDownload` hook 使用、各カードに `<DownloadButton>` 追加
+- [x] `src/pages/Library.tsx` を変更 — `useScriptDownload` hook 使用、各カードに `<DownloadButton>` 追加
 - [ ] `src/pages/Library.module.css` を変更（必要に応じて）
-- [ ] `handleDelete` 時に `clearCache(id)` も呼ぶ
+- [x] `handleDelete` 時に `clearCache(id)` も呼ぶ
 
 カードレイアウト:
 ```
@@ -120,7 +134,7 @@ cleanup:
 
 ### Step 5: Practice 画面統合
 
-- [ ] `src/hooks/usePracticeSession.ts` を変更 — fetch 前にキャッシュ確認
+- [x] `src/hooks/usePracticeSession.ts` を変更 — fetch 前にキャッシュ確認
 
 ```typescript
 const cached = await getCachedScript(scriptId);
@@ -138,7 +152,7 @@ const data = await api.getScript(scriptId);
 
 ### Step 6: テスト
 
-- [ ] `src/lib/scriptCache.test.ts` を新規作成 — `globalThis.caches` をモックして cache put/get/delete をテスト
+- [x] `src/lib/scriptCache.test.ts` を新規作成 — `globalThis.caches` をモックして cache put/get/delete をテスト
 - [ ] 手動確認: Library でダウンロード → 機内モードで Practice 画面が動作するか
 
 ## フロー図
@@ -175,6 +189,7 @@ Library → tap ✓ → delete from "offline-scripts" + "audio-cache" + localSto
 
 | ファイル | 操作 |
 |----------|------|
+| `src/lib/api.ts` | 変更（`getScriptUrl` 追加） |
 | `src/lib/scriptCache.ts` | 新規 |
 | `src/lib/scriptCache.test.ts` | 新規 |
 | `src/hooks/useScriptDownload.ts` | 新規 |

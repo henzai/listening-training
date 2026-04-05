@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { DownloadButton } from "../components/DownloadButton";
+import { useScriptDownload } from "../hooks/useScriptDownload";
 import * as api from "../lib/api";
 import type { Script } from "../lib/types";
 import styles from "./Library.module.css";
@@ -8,6 +10,7 @@ export function Library() {
   const [scripts, setScripts] = useState<Script[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "practiced" | "new">("all");
+  const { isDownloaded, downloadProgress, startDownload, clearCache } = useScriptDownload();
 
   useEffect(() => {
     api
@@ -18,6 +21,7 @@ export function Library() {
 
   async function handleDelete(id: string) {
     await api.deleteScript(id);
+    await clearCache(id);
     setScripts((prev) => prev.filter((s) => s.id !== id));
   }
 
@@ -77,6 +81,12 @@ export function Library() {
                   <span className={styles.status}>{script.status}</span>
                 )}
               </Link>
+              <DownloadButton
+                isDownloaded={isDownloaded(script.id)}
+                progress={downloadProgress(script.id)}
+                onDownload={() => startDownload(script.id)}
+                onClear={() => clearCache(script.id)}
+              />
               <button
                 type="button"
                 className={styles.deleteButton}
