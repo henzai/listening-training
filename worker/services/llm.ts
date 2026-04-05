@@ -158,12 +158,22 @@ Generate 11-25 sentences total.`,
   }
 
   const data = (await response.json()) as {
-    choices: Array<{ message: { content: string } }>;
+    choices?: Array<{ message?: { content?: string } }>;
   };
-  const parsed = JSON.parse(data.choices[0].message.content) as {
-    title?: string;
-    sentences: LLMSentence[];
-  };
+
+  const content = data.choices?.[0]?.message?.content;
+  if (!content) {
+    throw new Error("LLM response missing choices[0].message.content");
+  }
+
+  let parsed: { title?: string; sentences: LLMSentence[] };
+  try {
+    parsed = JSON.parse(content) as { title?: string; sentences: LLMSentence[] };
+  } catch (e) {
+    throw new Error(
+      `Failed to parse LLM response as JSON: ${e instanceof Error ? e.message : String(e)}`,
+    );
+  }
 
   stripSpeakerPrefixes(parsed.sentences);
 
