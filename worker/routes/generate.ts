@@ -76,24 +76,24 @@ generateRoutes.post("/generate", async (c) => {
 
 generateRoutes.get("/generate/status/:scriptId", async (c) => {
   const scriptId = c.req.param("scriptId");
-  const script = await c.env.DB.prepare("SELECT status, sentence_count FROM scripts WHERE id = ?")
+  const row = await c.env.DB.prepare(
+    `SELECT s.status, s.sentence_count,
+            COUNT(sn.audio_r2_key) AS completed_audio
+     FROM scripts s
+     LEFT JOIN sentences sn ON sn.script_id = s.id AND sn.audio_r2_key IS NOT NULL
+     WHERE s.id = ?
+     GROUP BY s.id`,
+  )
     .bind(scriptId)
-    .first<{ status: string; sentence_count: number }>();
+    .first<{ status: string; sentence_count: number; completed_audio: number }>();
 
-  if (!script) {
+  if (!row) {
     return c.json({ error: "Script not found" }, 404);
   }
 
-  // Count sentences with audio
-  const result = await c.env.DB.prepare(
-    "SELECT COUNT(*) as count FROM sentences WHERE script_id = ? AND audio_r2_key IS NOT NULL",
-  )
-    .bind(scriptId)
-    .first<{ count: number }>();
-
   return c.json({
-    status: script.status,
-    totalSentences: script.sentence_count,
-    completedAudio: result?.count ?? 0,
+    status: row.status,
+    totalSentences: row.sentence_count,
+    completedAudio: row.completed_audio,
   });
 });
