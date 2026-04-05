@@ -77,6 +77,11 @@ async function generateSingleAudio(
       return response.arrayBuffer();
     }
 
+    // Only retry on 429 (rate limit) and 5xx (server errors)
+    if (response.status !== 429 && response.status < 500) {
+      throw new Error(`TTS request failed with non-retryable status: ${response.status}`);
+    }
+
     if (attempt === MAX_RETRIES) {
       throw new Error(`TTS failed after ${MAX_RETRIES + 1} attempts: ${response.status}`);
     }
