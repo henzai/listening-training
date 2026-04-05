@@ -8,6 +8,10 @@
     "build": "tsc -b && vite build",
     "preview": "wrangler dev",
     "deploy": "npm run build && wrangler deploy",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "test:worker": "vitest run --project worker",
+    "test:app": "vitest run --project app",
     "lint": "biome check .",
     "format": "biome format --write .",
     "check": "biome check --write ."
@@ -30,15 +34,21 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.10",
+    "@cloudflare/vitest-pool-workers": "^0.14.1",
     "@cloudflare/workers-types": "^4.20260404.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.2.0",
     "hono": "^4.12.10",
+    "jsdom": "^29.0.1",
     "openai": "^6.33.0",
     "typescript": "^6.0.2",
     "vite": "^7.3.1",
     "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^4.1.2",
     "wrangler": "^4.80.0"
   }
 }
