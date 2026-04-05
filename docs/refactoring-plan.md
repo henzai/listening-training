@@ -67,10 +67,10 @@
 
 ## Phase D: 細かい改善
 
-- [ ] モデル名定数化: `worker/constants.ts` に `LLM_MODEL`, `TTS_MODEL` を定義
+- [x] モデル名定数化: `worker/constants.ts` に `LLM_MODEL`, `TTS_MODEL` を定義
   - `worker/services/llm.ts` line 125 の `"gpt-5.4-mini"` → `LLM_MODEL`
   - `worker/services/tts.ts` line 65 の `"gpt-4o-mini-tts"` → `TTS_MODEL`
-- [ ] CSS エラー色変数化: `rgba(239, 68, 68, 0.1)` → `color-mix(in srgb, var(--color-error) 10%, transparent)`
+- [x] CSS エラー色変数化: `rgba(239, 68, 68, 0.1)` → `color-mix(in srgb, var(--color-error) 10%, transparent)`
   - `Library.module.css` line 108
   - `Generate.module.css` line 96
   - ※ `color-mix` パターンは Practice.module.css (lines 30, 35) で既に使用済み

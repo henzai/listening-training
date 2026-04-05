@@ -1,3 +1,4 @@
+import { TTS_MODEL } from "../constants";
 import type { Env, LLMSentence } from "../types";
 
 const FEMALE_VOICES = ["coral", "nova", "sage", "shimmer", "fable"] as const;
@@ -62,7 +63,7 @@ async function generateSingleAudio(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini-tts",
+        model: TTS_MODEL,
         input: text,
         voice,
         instructions:

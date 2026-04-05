@@ -1,3 +1,4 @@
+import { LLM_MODEL } from "../constants";
 import type { LLMSentence } from "../types";
 
 interface Scenario {
@@ -122,7 +123,7 @@ export async function generateScript(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "gpt-5.4-mini",
+      model: LLM_MODEL,
       response_format: { type: "json_object" },
       messages: [
         {
