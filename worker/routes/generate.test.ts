@@ -1,7 +1,7 @@
 import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test";
 import { env } from "cloudflare:workers";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import app from "../index";
+import { app } from "../index";
 import { applySchema, cleanTables } from "../test-helpers";
 import type { LLMSentence } from "../types";
 
