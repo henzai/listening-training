@@ -68,6 +68,7 @@ export function Library() {
                   <span className={styles.topic}>{script.topic}</span>
                   <span className={styles.difficulty}>{script.difficulty}</span>
                 </div>
+                {script.title && <span className={styles.scriptTitle}>{script.title}</span>}
                 <div className={styles.cardMeta}>
                   <span>{script.sentence_count} sentences</span>
                   <span>{new Date(script.created_at).toLocaleDateString("ja-JP")}</span>

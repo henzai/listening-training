@@ -4,6 +4,7 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS scripts (
   id TEXT PRIMARY KEY,
   topic TEXT NOT NULL,
+  title TEXT,
   difficulty TEXT NOT NULL,
   sentence_count INTEGER NOT NULL,
   total_duration_ms INTEGER,

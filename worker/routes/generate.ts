@@ -15,18 +15,21 @@ generateRoutes.post("/generate", async (c) => {
   const scriptId = crypto.randomUUID();
 
   // Generate script via LLM
+  let title: string;
   let sentences: LLMSentence[];
   try {
-    sentences = await generateScript(c.env.OPENAI_API_KEY, topic, difficulty);
+    const result = await generateScript(c.env.OPENAI_API_KEY, topic, difficulty);
+    title = result.title;
+    sentences = result.sentences;
   } catch {
     return c.json({ error: "Failed to generate script" }, 500);
   }
 
   // Insert script record
   await c.env.DB.prepare(
-    "INSERT INTO scripts (id, topic, difficulty, sentence_count, status) VALUES (?, ?, ?, ?, 'generating')",
+    "INSERT INTO scripts (id, topic, title, difficulty, sentence_count, status) VALUES (?, ?, ?, ?, ?, 'generating')",
   )
-    .bind(scriptId, topic, difficulty, sentences.length)
+    .bind(scriptId, topic, title || null, difficulty, sentences.length)
     .run();
 
   // Insert sentence records

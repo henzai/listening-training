@@ -7,6 +7,7 @@ export interface Env {
 export interface Script {
   id: string;
   topic: string;
+  title: string | null;
   difficulty: string;
   sentence_count: number;
   total_duration_ms: number | null;

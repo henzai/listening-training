@@ -84,7 +84,7 @@ export async function generateScript(
   apiKey: string,
   topic: string,
   difficulty: string,
-): Promise<LLMSentence[]> {
+): Promise<{ title: string; sentences: LLMSentence[] }> {
   const scenarios = TOPIC_SCENARIOS[topic];
   const scenario = scenarios ? pickRandom(scenarios) : { description: topic, dialogue: false };
   const difficultyDesc =
@@ -92,8 +92,8 @@ export async function generateScript(
   const isDialogue = scenario.dialogue;
 
   const jsonSchema = isDialogue
-    ? '{ "sentences": [{ "speaker": "Emma", "speaker_gender": "female", "text_en": "Thanks for joining us today.", "text_ja": "今日はご参加いただきありがとうございます。" }] }'
-    : '{ "sentences": [{ "text_en": "English sentence", "text_ja": "Japanese translation" }] }';
+    ? '{ "title": "A concise descriptive title", "sentences": [{ "speaker": "Emma", "speaker_gender": "female", "text_en": "Thanks for joining us today.", "text_ja": "今日はご参加いただきありがとうございます。" }] }'
+    : '{ "title": "A concise descriptive title", "sentences": [{ "text_en": "English sentence", "text_ja": "Japanese translation" }] }';
 
   const formatInstruction = isDialogue
     ? `Generate a natural dialogue for this scenario: ${scenario.description}. Follow these rules:
@@ -121,6 +121,7 @@ export async function generateScript(
 Task: Generate a ${isDialogue ? "dialogue" : "passage"} script about the given topic, broken into individual sentences.
 
 Requirements:
+- Generate a concise English title (under 8 words) that describes the specific scenario. Do NOT just repeat the topic category.
 - Each sentence should be natural spoken English suitable for shadowing practice.
 - ${difficultyDesc}
 
@@ -148,6 +149,7 @@ Generate 11-25 sentences total.`,
     choices: Array<{ message: { content: string } }>;
   };
   const parsed = JSON.parse(data.choices[0].message.content) as {
+    title?: string;
     sentences: LLMSentence[];
   };
 
@@ -158,5 +160,5 @@ Generate 11-25 sentences total.`,
     }
   }
 
-  return parsed.sentences;
+  return { title: parsed.title ?? "", sentences: parsed.sentences };
 }
