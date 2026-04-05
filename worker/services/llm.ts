@@ -73,9 +73,9 @@ function pickRandom<T>(arr: T[]): T {
 
 const DIFFICULTY_INSTRUCTIONS: Record<string, string> = {
   intermediate:
-    "Use clear, straightforward sentences. Vocabulary should be common (TOEIC 600-700 level). Keep sentences 8-15 words each.",
+    "Use clear, straightforward sentences. Vocabulary should be common (TOEIC 600-700 level). Keep sentences 10-15 words each.",
   "upper-intermediate":
-    "Use moderately complex sentences with some idiomatic expressions. Vocabulary at TOEIC 700-800 level. Sentences can be 10-20 words.",
+    "Use moderately complex sentences with some idiomatic expressions. Vocabulary at TOEIC 700-800 level. Sentences can be 12-22 words.",
   advanced:
     "Use complex, natural English with idioms, phrasal verbs, and nuanced vocabulary. TOEIC 800-900 level. Sentences can be 12-25 words.",
 };
