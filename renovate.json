@@ -1,0 +1,42 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "minimumReleaseAge": "3 days",
+  "packageRules": [
+    {
+      "description": "Automerge minor and patch updates",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "description": "Group React packages",
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+      "groupName": "react"
+    },
+    {
+      "description": "Group Testing Library packages",
+      "matchPackageNames": ["@testing-library/*"],
+      "groupName": "testing-library"
+    },
+    {
+      "description": "Group Cloudflare packages",
+      "matchPackageNames": ["wrangler", "@cloudflare/*"],
+      "groupName": "cloudflare"
+    },
+    {
+      "description": "Group Vite packages",
+      "matchPackageNames": ["vite", "@vitejs/*"],
+      "groupName": "vite"
+    },
+    {
+      "description": "Group Biome packages",
+      "matchPackageNames": ["@biomejs/*"],
+      "groupName": "biome"
+    },
+    {
+      "description": "Group Vitest packages",
+      "matchPackageNames": ["vitest", "@vitest/*"],
+      "groupName": "vitest"
+    }
+  ]
+}
