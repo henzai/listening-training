@@ -4,14 +4,14 @@ import app from "../index";
 import { applySchema, cleanTables } from "../test-helpers";
 
 async function insertScript(id: string, overrides: Record<string, unknown> = {}) {
-  const defaults = {
+  const d: Record<string, unknown> = {
     topic: "business",
     title: "Test Script",
     difficulty: "intermediate",
     sentence_count: 2,
     status: "ready",
+    ...overrides,
   };
-  const d = { ...defaults, ...overrides };
   const cols = d.created_at
     ? "INSERT INTO scripts (id, topic, title, difficulty, sentence_count, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
     : "INSERT INTO scripts (id, topic, title, difficulty, sentence_count, status) VALUES (?, ?, ?, ?, ?, ?)";
