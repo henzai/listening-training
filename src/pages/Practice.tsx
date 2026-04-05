@@ -19,6 +19,7 @@ export function Practice() {
   const [topVisible, setTopVisible] = useState(true);
   const [bottomVisible, setBottomVisible] = useState(false);
   const scrollTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const autoScrollingRef = useRef(false);
 
   // Auto-play first sentence when loaded
   // biome-ignore lint/correctness/useExhaustiveDependencies: run once when sentences are ready
@@ -53,10 +54,15 @@ export function Practice() {
 
   // Auto-scroll to current sentence
   useEffect(() => {
-    sentenceRefs.current[player.currentIndex]?.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
+    const el = sentenceRefs.current[player.currentIndex];
+    if (!el) return;
+    autoScrollingRef.current = true;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    // smooth scroll typically finishes within ~400ms
+    const timer = setTimeout(() => {
+      autoScrollingRef.current = false;
+    }, 500);
+    return () => clearTimeout(timer);
   }, [player.currentIndex]);
 
   // Top overlay: visible when scrolled to top
@@ -67,6 +73,7 @@ export function Practice() {
     if (!el) return;
     const onScroll = () => {
       setTopVisible(el.scrollTop <= 10);
+      if (autoScrollingRef.current) return;
       setBottomVisible(true);
       if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
       scrollTimerRef.current = setTimeout(() => setBottomVisible(false), 1500);
