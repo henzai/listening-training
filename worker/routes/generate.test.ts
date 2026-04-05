@@ -160,8 +160,16 @@ describe("generate routes", () => {
       expect(sentences[0].speaker).toBe("Emma");
       expect(sentences[2].text_en).toBe("How are you?");
 
-      // Verify generateAudioForSentences was called
-      expect(generateAudioForSentences).toHaveBeenCalledOnce();
+      // Verify generateAudioForSentences was called with correct args
+      expect(generateAudioForSentences).toHaveBeenCalledWith(
+        env,
+        body.scriptId,
+        mockSentences,
+        expect.arrayContaining([expect.any(String)]),
+        "business",
+      );
+      const sentenceIds = vi.mocked(generateAudioForSentences).mock.calls[0][3];
+      expect(sentenceIds).toHaveLength(3);
     });
 
     it("returns 500 when LLM fails", async () => {
