@@ -12,11 +12,13 @@ async function insertScript(id: string, overrides: Record<string, unknown> = {})
     status: "ready",
   };
   const d = { ...defaults, ...overrides };
-  await env.DB.prepare(
-    "INSERT INTO scripts (id, topic, title, difficulty, sentence_count, status) VALUES (?, ?, ?, ?, ?, ?)",
-  )
-    .bind(id, d.topic, d.title, d.difficulty, d.sentence_count, d.status)
-    .run();
+  const cols = d.created_at
+    ? "INSERT INTO scripts (id, topic, title, difficulty, sentence_count, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    : "INSERT INTO scripts (id, topic, title, difficulty, sentence_count, status) VALUES (?, ?, ?, ?, ?, ?)";
+  const binds = d.created_at
+    ? [id, d.topic, d.title, d.difficulty, d.sentence_count, d.status, d.created_at]
+    : [id, d.topic, d.title, d.difficulty, d.sentence_count, d.status];
+  await env.DB.prepare(cols).bind(...binds).run();
 }
 
 async function insertSentence(
@@ -56,17 +58,15 @@ describe("script routes", () => {
     });
 
     it("returns scripts ordered by created_at desc", async () => {
-      await insertScript("s1", { title: "First" });
-      await insertScript("s2", { title: "Second" });
+      await insertScript("s1", { title: "First", created_at: "2024-01-01 00:00:00" });
+      await insertScript("s2", { title: "Second", created_at: "2024-01-02 00:00:00" });
 
       const res = await app.request("/api/v1/scripts", {}, env);
       expect(res.status).toBe(200);
       const { scripts } = (await res.json()) as { scripts: { id: string }[] };
       expect(scripts).toHaveLength(2);
-      // Both inserted in same second, so order may vary; just check both exist
-      const ids = scripts.map((s) => s.id);
-      expect(ids).toContain("s1");
-      expect(ids).toContain("s2");
+      expect(scripts[0].id).toBe("s2");
+      expect(scripts[1].id).toBe("s1");
     });
   });
 
