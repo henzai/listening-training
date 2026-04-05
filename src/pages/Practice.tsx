@@ -158,10 +158,7 @@ export function Practice() {
             ←
           </button>
           <div className={styles.headerInfo}>
-            <span className={styles.topic}>{session.script.topic}</span>
-            <span className={styles.counter}>
-              {player.currentIndex + 1} / {session.sentences.length}
-            </span>
+            <span className={styles.title}>{session.script.title ?? session.script.topic}</span>
           </div>
         </div>
 
