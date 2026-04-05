@@ -3,10 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import app from "../index";
 import { applySchema } from "../test-helpers";
 
-async function insertScript(
-  id: string,
-  overrides: Record<string, unknown> = {},
-) {
+async function insertScript(id: string, overrides: Record<string, unknown> = {}) {
   const defaults = {
     topic: "business",
     title: "Test Script",
@@ -81,11 +78,7 @@ describe("script routes", () => {
         text_ja: "世界",
       });
 
-      const res = await app.request(
-        "/api/v1/scripts/detail-1",
-        {},
-        env,
-      );
+      const res = await app.request("/api/v1/scripts/detail-1", {}, env);
       expect(res.status).toBe(200);
       const body = (await res.json()) as {
         script: { id: string };
@@ -98,11 +91,7 @@ describe("script routes", () => {
     });
 
     it("returns 404 for non-existent script", async () => {
-      const res = await app.request(
-        "/api/v1/scripts/nonexistent",
-        {},
-        env,
-      );
+      const res = await app.request("/api/v1/scripts/nonexistent", {}, env);
       expect(res.status).toBe(404);
       expect(await res.json()).toEqual({ error: "Script not found" });
     });
@@ -114,21 +103,20 @@ describe("script routes", () => {
       await insertSentence("del-sent-1", "del-1", 0, {
         audio_r2_key: "audio/del-1/0.mp3",
       });
-      await env.AUDIO_BUCKET.put(
-        "audio/del-1/0.mp3",
-        new Uint8Array([1, 2, 3]),
-      );
+      await env.AUDIO_BUCKET.put("audio/del-1/0.mp3", new Uint8Array([1, 2, 3]));
 
-      const res = await app.request("/api/v1/scripts/del-1", {
-        method: "DELETE",
-      }, env);
+      const res = await app.request(
+        "/api/v1/scripts/del-1",
+        {
+          method: "DELETE",
+        },
+        env,
+      );
       expect(res.status).toBe(200);
       expect(await res.json()).toEqual({ ok: true });
 
       // Verify D1 rows deleted
-      const script = await env.DB.prepare(
-        "SELECT * FROM scripts WHERE id = ?",
-      )
+      const script = await env.DB.prepare("SELECT * FROM scripts WHERE id = ?")
         .bind("del-1")
         .first();
       expect(script).toBeNull();
@@ -151,25 +139,17 @@ describe("script routes", () => {
       await insertScript("prog-1");
 
       // Verify initially null
-      const before = await env.DB.prepare(
-        "SELECT last_practiced_at FROM scripts WHERE id = ?",
-      )
+      const before = await env.DB.prepare("SELECT last_practiced_at FROM scripts WHERE id = ?")
         .bind("prog-1")
         .first<{ last_practiced_at: string | null }>();
       expect(before?.last_practiced_at).toBeNull();
 
-      const res = await app.request(
-        "/api/v1/scripts/prog-1/progress",
-        { method: "PATCH" },
-        env,
-      );
+      const res = await app.request("/api/v1/scripts/prog-1/progress", { method: "PATCH" }, env);
       expect(res.status).toBe(200);
       expect(await res.json()).toEqual({ ok: true });
 
       // Verify updated
-      const after = await env.DB.prepare(
-        "SELECT last_practiced_at FROM scripts WHERE id = ?",
-      )
+      const after = await env.DB.prepare("SELECT last_practiced_at FROM scripts WHERE id = ?")
         .bind("prog-1")
         .first<{ last_practiced_at: string | null }>();
       expect(after?.last_practiced_at).not.toBeNull();

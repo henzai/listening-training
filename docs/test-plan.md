@@ -89,7 +89,7 @@ miniflare 経由の D1/R2 バインディングを使い、ルートハンドラ
   - [x] `worker/test-helpers.ts` — `cloudflare:workers` の `env` から D1 にスキーマを適用するヘルパー
   - [x] 既存テスト (`tts.test.ts`, `llm.test.ts`) が cloudflare pool で動作確認
 
-- [ ] **2-2. ルートテスト**
+- [x] **2-2. ルートテスト**
   - [x] `worker/index.test.ts` — GET /api/v1/health → `{ ok: true }`
   - [x] `worker/routes/audio.test.ts`
     - R2 にオブジェクトなし → 404
@@ -99,7 +99,7 @@ miniflare 経由の D1/R2 バインディングを使い、ルートハンドラ
     - GET /scripts/:id: 存在する/しない script
     - DELETE /scripts/:id: cascade 削除の検証
     - PATCH /scripts/:id/progress: last_practiced_at 更新
-  - [ ] `worker/routes/generate.test.ts`
+  - [x] `worker/routes/generate.test.ts`
     - POST /generate: `generateScript` をモジュールレベルでモック → D1 挿入の検証
     - GET /generate/status/:scriptId: ステータス応答の検証
 

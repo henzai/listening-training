@@ -22,9 +22,7 @@ describe("audio routes", () => {
       const res = await app.request("/api/v1/audio/test-script/0", {}, env);
       expect(res.status).toBe(200);
       expect(res.headers.get("Content-Type")).toBe("audio/mpeg");
-      expect(res.headers.get("Cache-Control")).toBe(
-        "public, max-age=31536000, immutable",
-      );
+      expect(res.headers.get("Cache-Control")).toBe("public, max-age=31536000, immutable");
 
       const body = new Uint8Array(await res.arrayBuffer());
       expect(body).toEqual(testData);
