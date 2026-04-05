@@ -11,7 +11,6 @@ vi.mock("../services/llm", () => ({
 
 vi.mock("../services/tts", () => ({
   generateAudioForSentences: vi.fn().mockResolvedValue(undefined),
-  buildVoiceMap: vi.fn(),
 }));
 
 import { generateScript } from "../services/llm";
