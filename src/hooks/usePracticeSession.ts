@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import * as api from "../lib/api";
-import type { PracticeMode, Script, Sentence } from "../lib/types";
+import type { Script, Sentence } from "../lib/types";
 
 export function usePracticeSession(scriptId: string) {
   const [script, setScript] = useState<Script | null>(null);
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<PracticeMode>("listen-read");
   const [showEnglish, setShowEnglish] = useState(true);
   const [showJapanese, setShowJapanese] = useState(true);
 
@@ -22,24 +21,6 @@ export function usePracticeSession(scriptId: string) {
       .finally(() => setLoading(false));
   }, [scriptId]);
 
-  // Update text visibility based on mode
-  useEffect(() => {
-    switch (mode) {
-      case "listen-read":
-        setShowEnglish(true);
-        setShowJapanese(true);
-        break;
-      case "guided-shadow":
-        setShowEnglish(true);
-        setShowJapanese(false);
-        break;
-      case "blind-shadow":
-        setShowEnglish(false);
-        setShowJapanese(false);
-        break;
-    }
-  }, [mode]);
-
   function markPracticed() {
     api.updateProgress(scriptId);
   }
@@ -49,8 +30,6 @@ export function usePracticeSession(scriptId: string) {
     sentences,
     loading,
     error,
-    mode,
-    setMode,
     showEnglish,
     setShowEnglish,
     showJapanese,

@@ -33,8 +33,6 @@ export type Topic =
   | "sports";
 export type Difficulty = "intermediate" | "upper-intermediate" | "advanced";
 
-export type PracticeMode = "listen-read" | "guided-shadow" | "blind-shadow";
-
 export const TOPICS: { value: Topic; label: string }[] = [
   { value: "business", label: "Business" },
   { value: "daily", label: "Daily Life" },

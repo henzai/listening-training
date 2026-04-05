@@ -2,15 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
 import { usePracticeSession } from "../hooks/usePracticeSession";
-import type { PracticeMode } from "../lib/types";
 import { SPEED_PRESETS } from "../lib/types";
 import styles from "./Practice.module.css";
-
-const MODE_LABELS: Record<PracticeMode, string> = {
-  "listen-read": "Listen & Read",
-  "guided-shadow": "Guided Shadow",
-  "blind-shadow": "Blind Shadow",
-};
 
 export function Practice() {
   const { scriptId } = useParams<{ scriptId: string }>();
@@ -163,19 +156,6 @@ export function Practice() {
               {player.currentIndex + 1} / {session.sentences.length}
             </span>
           </div>
-        </div>
-
-        <div className={styles.modeSelector}>
-          {(["listen-read", "guided-shadow", "blind-shadow"] as const).map((m) => (
-            <button
-              type="button"
-              key={m}
-              className={`${styles.modeButton} ${session.mode === m ? styles.modeActive : ""}`}
-              onClick={() => session.setMode(m)}
-            >
-              {MODE_LABELS[m]}
-            </button>
-          ))}
         </div>
 
         <div className={styles.toggleRow}>

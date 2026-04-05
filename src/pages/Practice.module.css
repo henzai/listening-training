@@ -11,7 +11,7 @@
   overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
-  padding: calc(140px + var(--safe-top)) 12px calc(8px + var(--safe-bottom));
+  padding: calc(100px + var(--safe-top)) 12px calc(8px + var(--safe-bottom));
 }
 
 .sentenceItem {
@@ -147,8 +147,8 @@
   color: var(--color-text-secondary);
 }
 
-/* Mode Selector */
-.modeSelector {
+/* Text Toggle */
+.toggleRow {
   display: flex;
   background: var(--color-surface);
   border-radius: 10px;
@@ -156,41 +156,18 @@
   gap: 2px;
 }
 
-.modeButton {
-  flex: 1;
-  padding: 8px 4px;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  transition: all 0.15s;
-}
-
-.modeButton.modeActive {
-  background: var(--color-primary);
-  color: white;
-}
-
-/* Text Toggle */
-.toggleRow {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-
 .toggleButton {
-  padding: 6px 16px;
-  border-radius: 6px;
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 600;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
   transition: all 0.15s;
 }
 
 .toggleButton.toggleActive {
   background: var(--color-primary);
-  border-color: var(--color-primary);
   color: white;
 }
 
