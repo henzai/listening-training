@@ -65,6 +65,9 @@ async function generateSingleAudio(
         model: "gpt-4o-mini-tts",
         input: text,
         voice,
+        instructions:
+          "Speak at a steady pace of about 150 words per minute. Keep natural intonation and expressiveness.",
+        speed: 1.05,
         response_format: "mp3",
       }),
     });
