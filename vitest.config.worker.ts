@@ -11,5 +11,6 @@ export default defineProject({
   test: {
     name: "worker",
     include: ["worker/**/*.test.ts"],
+    setupFiles: ["./worker/vitest-setup.ts"],
   },
 });
