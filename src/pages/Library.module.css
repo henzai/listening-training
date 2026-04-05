@@ -78,6 +78,15 @@
   border-radius: 4px;
 }
 
+.cachedBadge {
+  font-size: 0.7rem;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
 .scriptTitle {
   font-size: 0.85rem;
   color: var(--color-text);
@@ -96,11 +105,61 @@
   color: var(--color-warning);
 }
 
+.progressBar {
+  height: 3px;
+  background: var(--color-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 0.2s ease;
+}
+
+.cardActions {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--color-border);
+}
+
+.downloadButton,
+.cacheButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  color: var(--color-text-secondary);
+  transition: all 0.15s;
+}
+
+.downloadButton:hover {
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+}
+
+.downloadButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.cacheButton:hover {
+  background: color-mix(in srgb, var(--color-warning) 10%, transparent);
+  color: var(--color-warning);
+}
+
+.downloadingText {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
 .deleteButton {
   padding: 0 16px;
   font-size: 1.25rem;
   color: var(--color-text-secondary);
-  border-left: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
   transition: all 0.15s;
 }
 

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getAudioUrl } from "../lib/api";
+import { getCachedAudio } from "../lib/cache";
 import { loadSettings, saveSettings } from "../lib/settings";
 
 interface UseAudioPlayerOptions {
@@ -9,9 +10,11 @@ interface UseAudioPlayerOptions {
 
 export function useAudioPlayer({ scriptId, sentenceCount }: UseAudioPlayerOptions) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const blobUrlRef = useRef<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(() => loadSettings().speed);
+
   // Initialize audio element
   useEffect(() => {
     const audio = new Audio();
@@ -25,6 +28,9 @@ export function useAudioPlayer({ scriptId, sentenceCount }: UseAudioPlayerOption
     return () => {
       audio.pause();
       audio.src = "";
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+      }
     };
   }, []);
 
@@ -41,7 +47,22 @@ export function useAudioPlayer({ scriptId, sentenceCount }: UseAudioPlayerOption
       const audio = audioRef.current;
       if (!audio) return;
 
-      audio.src = getAudioUrl(scriptId, index);
+      // Revoke previous blob URL if any
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+        blobUrlRef.current = null;
+      }
+
+      // Try cached audio first
+      const cached = await getCachedAudio(scriptId, index);
+      if (cached) {
+        const url = URL.createObjectURL(cached);
+        blobUrlRef.current = url;
+        audio.src = url;
+      } else {
+        audio.src = getAudioUrl(scriptId, index);
+      }
+
       audio.playbackRate = speed;
       try {
         await audio.play();
