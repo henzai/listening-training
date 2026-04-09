@@ -1,10 +1,11 @@
+import * as Sentry from "@sentry/cloudflare";
 import { Hono } from "hono";
 import { audioRoutes } from "./routes/audio";
 import { generateRoutes } from "./routes/generate";
 import { scriptRoutes } from "./routes/scripts";
 import type { Env } from "./types";
 
-const app = new Hono<{ Bindings: Env }>();
+export const app = new Hono<{ Bindings: Env }>();
 
 // Enable foreign keys for D1
 app.use("/api/*", async (c, next) => {
@@ -18,4 +19,10 @@ app.route("/api/v1", generateRoutes);
 app.route("/api/v1", scriptRoutes);
 app.route("/api/v1", audioRoutes);
 
-export default app;
+export default Sentry.withSentry<Env>(
+  (env) => ({
+    dsn: env.SENTRY_DSN,
+    tracesSampleRate: 0,
+  }),
+  app,
+);

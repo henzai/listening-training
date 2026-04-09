@@ -7,6 +7,8 @@ export interface Env {
   DB: D1Database;
   AUDIO_BUCKET: R2Bucket;
   OPENAI_API_KEY: string;
+  SENTRY_DSN: string;
+  CF_VERSION_METADATA: WorkerVersionMetadata;
 }
 
 export interface GenerateRequest {
