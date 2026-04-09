@@ -12,6 +12,7 @@ export default defineConfig({
       registerType: "autoUpdate",
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
             urlPattern: /^\/api\/v1\/audio\/.*/,
@@ -19,14 +20,6 @@ export default defineConfig({
             options: {
               cacheName: "audio-cache",
               expiration: { maxEntries: 500, maxAgeSeconds: 30 * 24 * 60 * 60 },
-            },
-          },
-          {
-            urlPattern: /^\/api\/v1\/.*/,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "api-cache",
-              expiration: { maxEntries: 50, maxAgeSeconds: 24 * 60 * 60 },
             },
           },
         ],
