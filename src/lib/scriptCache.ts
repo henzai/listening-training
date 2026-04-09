@@ -99,6 +99,15 @@ export async function getCachedScript(
   return res.json() as Promise<{ script: Script; sentences: Sentence[] }>;
 }
 
+export async function getCachedAudioUrl(scriptId: string, index: number): Promise<string | null> {
+  if (!hasCacheApi()) return null;
+  const cache = await caches.open(AUDIO_CACHE);
+  const res = await cache.match(getAudioUrl(scriptId, index));
+  if (!res) return null;
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
+}
+
 export async function clearScriptCache(scriptId: string): Promise<void> {
   if (!hasCacheApi()) return;
 

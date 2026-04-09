@@ -130,6 +130,21 @@ Phase 1 完了後、Phase 2 と並行して実施可能。
 
 ---
 
+## Phase 5: E2E ブラウザテスト (Playwright)
+
+- [x] `@playwright/test` 導入、Chromium インストール
+- [x] `playwright.config.ts` — `webServer` で `npm run dev` 自動起動
+- [x] `e2e/full-flow.spec.ts` — フルフロー検証
+  - Home ページ表示
+  - Generate → スクリプト生成 (OpenAI API) → Practice ページ遷移
+  - Practice ページ EN/JA トグル操作
+  - Library ページ表示 + フィルター操作
+  - Settings ページ Speed コントロール
+  - ボトムナビゲーション
+- [x] npm scripts: `test:e2e`, `test:e2e:ui`
+
+---
+
 ## 変更対象ファイル一覧
 
 | ファイル | 操作 |
