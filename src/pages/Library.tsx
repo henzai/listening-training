@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { DownloadButton } from "../components/DownloadButton";
 import { useScriptDownload } from "../hooks/useScriptDownload";
@@ -9,15 +9,23 @@ import styles from "./Library.module.css";
 export function Library() {
   const [scripts, setScripts] = useState<Script[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "practiced" | "new">("all");
   const { isDownloaded, downloadProgress, startDownload, clearCache } = useScriptDownload();
 
-  useEffect(() => {
+  const loadScripts = useCallback(() => {
+    setError(null);
+    setLoading(true);
     api
       .getScripts()
       .then((data) => setScripts(data.scripts))
+      .catch(() => setError("スクリプトの読み込みに失敗しました"))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    loadScripts();
+  }, [loadScripts]);
 
   async function handleDelete(id: string) {
     await api.deleteScript(id);
@@ -35,6 +43,20 @@ export function Library() {
     return (
       <div className={styles.loading}>
         <div className="spinner" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <h1 className={styles.title}>ライブラリ</h1>
+        <div className={styles.empty}>
+          <p>{error}</p>
+          <button type="button" className={styles.generateLink} onClick={loadScripts}>
+            再試行
+          </button>
+        </div>
       </div>
     );
   }
