@@ -15,7 +15,7 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
-            urlPattern: /^\/api\/v1\/audio\/.*/,
+            urlPattern: /\/api\/v1\/audio\/.*/,
             handler: "CacheFirst",
             options: {
               cacheName: "audio-cache",

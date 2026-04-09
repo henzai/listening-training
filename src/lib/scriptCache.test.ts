@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   clearScriptCache,
   downloadScript,
+  getCachedAudioUrl,
   getCachedScript,
   getDownloadedScripts,
   isScriptDownloaded,
@@ -128,6 +129,45 @@ describe("scriptCache", () => {
 
       const result = await getCachedScript("s1");
       expect(result).toEqual(data);
+    });
+  });
+
+  describe("getCachedAudioUrl", () => {
+    beforeEach(() => {
+      vi.stubGlobal("URL", {
+        ...URL,
+        createObjectURL: vi.fn(() => "blob:mock-url"),
+        revokeObjectURL: vi.fn(),
+      });
+    });
+
+    it("returns null when audio is not cached", async () => {
+      expect(await getCachedAudioUrl("s1", 0)).toBeNull();
+    });
+
+    it("returns a blob URL when audio is cached", async () => {
+      const audioCache = createMockCache();
+      audioCache._store.set(
+        "/api/v1/audio/s1/0",
+        new Response(new Blob(["audio-data"]), {
+          headers: { "Content-Type": "audio/mpeg" },
+        }),
+      );
+      cacheMap.set(AUDIO_CACHE, audioCache);
+
+      const result = await getCachedAudioUrl("s1", 0);
+      expect(result).toBe("blob:mock-url");
+      expect(URL.createObjectURL).toHaveBeenCalled();
+    });
+
+    it("returns null when Cache API is unavailable", async () => {
+      const original = globalThis.caches;
+      delete (globalThis as Record<string, unknown>).caches;
+      try {
+        expect(await getCachedAudioUrl("s1", 0)).toBeNull();
+      } finally {
+        vi.stubGlobal("caches", original);
+      }
     });
   });
 
