@@ -2,14 +2,48 @@ import type { Difficulty, Script, Sentence, Topic } from "./types";
 
 const BASE = "/api/v1";
 
+async function forceReauthentication(): Promise<never> {
+  if ("serviceWorker" in navigator) {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map((r) => r.unregister()));
+  }
+  const keys = await caches.keys();
+  await Promise.all(
+    keys.filter((k) => k.startsWith("workbox-precache")).map((k) => caches.delete(k)),
+  );
+  window.location.href = window.location.origin;
+  return new Promise(() => {});
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...init?.headers,
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        ...init?.headers,
+      },
+    });
+  } catch {
+    // Network error — possibly CORS block from Cloudflare Access redirect
+    try {
+      const probe = await fetch(`${BASE}/health`, { redirect: "manual" });
+      if (probe.type === "opaqueredirect" || probe.status === 0) {
+        await forceReauthentication();
+      }
+    } catch {
+      // Probe also failed — genuinely offline
+    }
+    throw new Error("Network error");
+  }
+
+  // Worker API always returns JSON. Non-JSON means Access intercepted the response.
+  const ct = res.headers.get("content-type");
+  if (!ct?.includes("application/json")) {
+    await forceReauthentication();
+  }
+
   if (!res.ok) {
     throw new Error(`API error: ${res.status}`);
   }
