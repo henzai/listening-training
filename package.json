@@ -52,7 +52,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.2.0",
     "hono": "^4.12.10",
-    "jsdom": "^29.0.1",
+    "jsdom": "^30.0.0",
     "npm-run-all2": "^8.0.4",
     "openai": "^6.33.0",
     "typescript": "^6.0.2",
